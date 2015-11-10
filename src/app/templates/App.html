@@ -1,0 +1,624 @@
+<div>
+    <div data-dojo-attach-point='mainContainer' class='main-container' data-dojo-type='dijit/layout/BorderContainer'>
+        <div class='title-pane' data-dojo-type='dijit/layout/ContentPane' data-dojo-props="region:'top'">
+            <h1>
+                <span class='title'>Utah Oil and Gas Map</span>
+                <a data-dojo-attach-point='version' class='version' href='ChangeLog.html'></a>
+            </h1>
+            <img src="app/resources/agrc_logo.jpg" alt="agrc logo">
+        </div>
+        <div data-dojo-attach-point='sideBar' class='side-bar' data-dojo-type='dijit/layout/TabContainer' data-dojo-props="region:'right'">
+            <div id="layersTab" data-dojo-type="dijit/layout/ContentPane" title="Layers">
+                <ul>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' checked='checked' id='0' value="0" data-dojo-attach-event='onclick: updateLayerVisibility' />
+                            <span>Oil/Gas Wells</span>
+                        </label>
+                    </li>
+                    <li>
+                        <ul>
+                            <li>
+                                <label>
+                                    <input type='radio' class='list_item' checked='checked' id='-1'
+                                    value="-1" data-dojo-attach-event='onclick: updateLayerVisibility' name='labels'/>
+                                    <span>No Labels</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input type='radio' class='list_item' id='1' value="1" data-dojo-attach-event='onclick: updateLayerVisibility'
+                                    name='labels'/>
+                                    <span>API Number</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input type='radio' class='list_item' id='2' value="2" data-dojo-attach-event='onclick: updateLayerVisibility'
+                                    name='labels'/>
+                                    <span>Well Name</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' checked='checked' id='3' value="3" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>County Boundary</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' id='4' value="4" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>County Names</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' checked='checked' id='5' value="5" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>Water Courses</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' checked='checked' id='6' value="6" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>Oil/Gas Fields</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' id='7' value="7" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>Field Names</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' checked='checked' id='8' value="8" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>Oil/Gas Units</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' class='list_item' id='9' value="9" data-dojo-attach-event='onclick: updateLayerVisibility'/>
+                            <span>Unit Names</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type='checkbox' data-dojo-attach-event='onclick: setPLSSVisibility'/>
+                            <span>Sec-Twp-Rng (not shown when zoomed out)</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input id='tiled-checkbox' type='checkbox' data-dojo-attach-event='onclick: toggleBaseMaps' checked/>
+                            <span>Base Maps (<span id='basemap-name'>Hybrid</span>)</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab" id="infoTab" data-dojo-type="dijit/layout/ContentPane" title="Info">
+                <div id="mapclick">
+                </div>
+            </div>
+            <div class="tab" id="legendTab" data-dojo-type="dijit/layout/ContentPane" title="Legend">
+                <div id='legend'>
+                </div>
+            </div>
+            <div class="tab" data-dojo-type="dijit/layout/ContentPane" title="Help">
+                Quickly zoom to any area of the map by holding down your Left Mouse Button and the Shift Key simultaneously, then dragging the mouse over the desired area.
+            </div>
+        </div>
+        <div data-dojo-attach-point='centerContainer' class='center-container' data-dojo-type='dijit/layout/ContentPane' data-dojo-props="region:'center'">
+            <div data-dojo-type="dijit/Toolbar">
+                <div data-dojo-type="dijit/form/DropDownButton">
+                    <span>Filter</span>
+                    <div data-dojo-type="dijit/Menu">
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('All');">All Wells</div>
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('Oil');">Oil Wells</div>
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('Gas');">Gas Wells</div>
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('Service');">Service Wells</div>
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('Active');">Active Wells</div>
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('Drilling');">Drilling Wells</div>
+                        <div data-dojo-type="dijit/MenuItem" onclick="AGRC.app.setDef('NewPermits');">New Permits</div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/form/DropDownButton">
+                    <span>Zoom</span>
+                    <div data-dojo-type="dijit/Menu">
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomTSH">Township/Range/Section</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomField">Field</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomCounty">County</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomWellApi">Well by API</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomWellName">Well by Name</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomWellOper">Well by Operator</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomFieldOper">Unit by Operator</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomLatLong">Latitude/Longitude</div>
+                        <div data-dojo-type="dijit/MenuItem" class='dialog-btn' id="zoomUTM">UTM Coordinates</div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/form/DropDownButton">
+                    <span>Download</span>
+                    <div data-dojo-type="dijit/Menu">
+                        <div data-dojo-type="dijit/MenuItem" id="CSV" onclick="AGRC.app.executePSELQueryTask();">All Visible Wells</div>
+                    </div>
+                </div>
+                <span data-dojo-attach-point="filterMess">Wells Filter: All</span>
+            </div>
+            <div data-dojo-attach-point='mapDiv' class='map-div'></div>
+        </div>
+    </div>
+
+    <!-- DIALOGS -->
+
+    <div id="progressbar_container">
+        <h5>
+            <b id="progresstext">Running Analysis...</b></h5>
+        <div data-dojo-type="dijit/ProgressBar" jsid="jsProgress" id="progressbar" data-dojo-props="indeterminate: true"></div>
+    </div>
+
+    <div data-dojo-type="dijit/Dialog" id="zoomUTMDialog" data-dojo-props='title: "Zoom to UTM"'>
+        <table>
+            <tr>
+                <td>
+                    <label for="xcoord">
+                        X-coordinate:
+                    </label>
+                </td>
+                <td>
+                    <input data-dojo-type="dijit/form/TextBox" type="text" name="ycoord" id="ycoord" value="4354758.7" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ycoord">
+                        Y-coordinate:
+                    </label>
+                </td>
+                <td>
+                    <input data-dojo-type="dijit/form/TextBox" type="text" name="xcoord" id="xcoord" value="294913.9" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button data-dojo-type="dijit/form/Button" type="submit" onclick="AGRC.app.addPointToMap(parseFloat(dojo.byId('xcoord').value), parseFloat(dojo.byId('ycoord').value));">ZOOM</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!--=============ZOOM LAT LONG DIALOG=============-->
+    <div data-dojo-type="dijit/Dialog" id="zoomLatLongDialog" data-dojo-props='title: "Zoom to Lat/Long"'>
+        <!--<div data-dojo-type="dijit/Dialog" id="Div1" title="Zoom to UTM" execute="alert('submitted w/args:\n' + dojo.toJson(arguments[0], true));">-->
+        <table>
+            <tr>
+                <td>
+                    <label for="xcoord">
+                        Longitude:
+                    </label>
+                </td>
+                <td>
+                    <input data-dojo-type="dijit/form/TextBox" type="text" name="lon" id="lon" value="-111.8922" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ycoord">
+                        Latitude:
+                    </label>
+                </td>
+                <td>
+                    <input data-dojo-type="dijit/form/TextBox" type="text" name="lat" id="lat" value="40.69392" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button data-dojo-type="dijit/form/Button" type="submit" onclick="AGRC.app.addLongLatToMap(parseFloat(dojo.byId('lon').value), parseFloat(dojo.byId('lat').value));">ZOOM</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--    =========================ZOOM TO FIELD======================-->
+    <div data-dojo-type="dijit/Dialog" id="zoomFieldDialog" data-dojo-props='title: "Zoom to Field"'>
+        <table>
+            <tr>
+                <td>
+                    <div class="input">
+                        <span>Field:</span>
+                        <select id="field">
+                            <option value="">-- Select --</option>
+                            <option value="AAGARD RANCH FIELD">AAGARD RANCH FIELD</option>
+                            <option value="AGATE FIELD">AGATE FIELD</option>
+                            <option value="AGENCY DRAW FIELD">AGENCY DRAW FIELD</option>
+                            <option value="AGENCY DRAW WEST FIELD">AGENCY DRAW WEST FIELD</option>
+                            <option value="AKAH FIELD">AKAH FIELD</option>
+                            <option value="ALGER PASS FIELD">ALGER PASS FIELD</option>
+                            <option value="ALKALI CANYON FIELD">ALKALI CANYON FIELD</option>
+                            <option value="ALKALI POINT FIELD">ALKALI POINT FIELD</option>
+                            <option value="ALTAMONT FIELD">ALTAMONT FIELD</option>
+                            <option value="ANDERSON JUNCTION FIELD">ANDERSON JUNCTION FIELD</option>
+                            <option value="ANETH FIELD">ANETH FIELD</option>
+                            <option value="ANIDO CREEK FIELD">ANIDO CREEK FIELD</option>
+                            <option value="ANSCHUTZ RANCH (WEBER) FIELD">ANSCHUTZ RANCH (WEBER) FIELD</option>
+                            <option value="ANSCHUTZ RANCH EAST FIELD">ANSCHUTZ RANCH EAST FIELD</option>
+                            <option value="ANSCHUTZ RANCH FIELD">ANSCHUTZ RANCH FIELD</option>
+                            <option value="ANTELOPE CREEK FIELD">ANTELOPE CREEK FIELD</option>
+                            <option value="ASHLEY VALLEY FIELD">ASHLEY VALLEY FIELD</option>
+                            <option value="ASPHALT WASH FIELD">ASPHALT WASH FIELD</option>
+                            <option value="ATCHEE RIDGE FIELD">ATCHEE RIDGE FIELD</option>
+                            <option value="BANNOCK FIELD">BANNOCK FIELD</option>
+                            <option value="BAR X FIELD">BAR X FIELD</option>
+                            <option value="BARTLETT FLAT FIELD">BARTLETT FLAT FIELD</option>
+                            <option value="BEND FIELD">BEND FIELD</option>
+                            <option value="BIG FLAT FIELD">BIG FLAT FIELD</option>
+                            <option value="BIG FLAT WEST FIELD">BIG FLAT WEST FIELD</option>
+                            <option value="BIG INDIAN (NORTH) FIELD">BIG INDIAN (NORTH) FIELD</option>
+                            <option value="BIG INDIAN (SOUTH) FIELD">BIG INDIAN (SOUTH) FIELD</option>
+                            <option value="BIG SPRING">BIG SPRING</option>
+                            <option value="BIG VALLEY FIELD">BIG VALLEY FIELD</option>
+                            <option value="BIG WASH FIELD">BIG WASH FIELD</option>
+                            <option value="BITTER CREEK FIELD">BITTER CREEK FIELD",2</option>
+                            <option value="BLACK BULL FIELD">BLACK BULL FIELD</option>
+                            <option value="BLACK HORSE CANYON FIELD">BLACK HORSE CANYON FIELD</option>
+                            <option value="BLACKTAIL RIDGE FIELD">BLACKTAIL RIDGE FIELD</option>
+                            <option value="BLAZE CANYON FIELD">BLAZE CANYON FIELD</option>
+                            <option value="BLUE BENCH FIELD">BLUE BENCH FIELD</option>
+                            <option value="BLUEBELL FIELD">BLUEBELL FIELD</option>
+                            <option value="BLUFF BENCH FIELD">BLUFF BENCH FIELD</option>
+                            <option value="BLUFF FIELD">BLUFF FIELD</option>
+                            <option value="BONANZA FIELD">BONANZA FIELD</option>
+                            <option value="BOOK CLIFFS FIELD">BOOK CLIFFS FIELD</option>
+                            <option value="BOUNDARY BUTTE FIELD">BOUNDARY BUTTE FIELD</option>
+                            <option value="BRADFORD CANYON FIELD">BRADFORD CANYON FIELD</option>
+                            <option value="BRENNAN BOTTOM FIELD">BRENNAN BOTTOM FIELD</option>
+                            <option value="BRIDGELAND FIELD">BRIDGELAND FIELD</option>
+                            <option value="BRIDGER LAKE FIELD">BRIDGER LAKE FIELD</option>
+                            <option value="BROKEN HILLS FIELD">BROKEN HILLS FIELD</option>
+                            <option value="BRONCO FIELD">BRONCO FIELD</option>
+                            <option value="BROWN CANYON FIELD">BROWN CANYON FIELD</option>
+                            <option value="BRUNDAGE CANYON FIELD">BRUNDAGE CANYON FIELD</option>
+                            <option value="BRYSON CANYON FIELD">BRYSON CANYON FIELD</option>
+                            <option value="BUCK CANYON FIELD">BUCK CANYON FIELD</option>
+                            <option value="BUG FIELD">BUG FIELD</option>
+                            <option value="BULL CANYON FIELD">BULL CANYON FIELD</option>
+                            <option value="BUSHY FIELD">BUSHY FIELD</option>
+                            <option value="BUZZARD BENCH FIELD">BUZZARD BENCH FIELD</option>
+                            <option value="CABALLO FIELD">CABALLO FIELD</option>
+                            <option value="CACTUS PARK FIELD">CACTUS PARK FIELD</option>
+                            <option value="CAHONE MESA FIELD">CAHONE MESA FIELD</option>
+                            <option value="CAJON LAKE FIELD">CAJON LAKE FIELD</option>
+                            <option value="CAJON MESA FIELD">CAJON MESA FIELD</option>
+                            <option value="CASA MESA FIELD">CASA MESA FIELD</option>
+                            <option value="CASTLE PEAK FIELD">CASTLE PEAK FIELD</option>
+                            <option value="CASTLEGATE FIELD">CASTLEGATE FIELD</option>
+                            <option value="CAVE CANYON FIELD">CAVE CANYON FIELD</option>
+                            <option value="CAVE CREEK FIELD">CAVE CREEK FIELD</option>
+                            <option value="CAZADOR FIELD">CAZADOR FIELD</option>
+                            <option value="CEDAR CAMP FIELD">CEDAR CAMP FIELD</option>
+                            <option value="CEDAR RIM FIELD">CEDAR RIM FIELD</option>
+                            <option value="CHALK CREEK GAS STORAGE">CHALK CREEK GAS STORAGE</option>
+                            <option value="CHAPITA WELLS FIELD">CHAPITA WELLS FIELD</option>
+                            <option value="CHEROKEE FIELD">CHEROKEE FIELD</option>
+                            <option value="CHINLE WASH FIELD">CHINLE WASH FIELD</option>
+                            <option value="CHOKECHERRY CANYON FIELD">CHOKECHERRY CANYON FIELD</option>
+                            <option value="CISCO DOME FIELD">CISCO DOME FIELD</option>
+                            <option value="CISCO SPRINGS FIELD">CISCO SPRINGS FIELD</option>
+                            <option value="CISCO SPRINGS N. FIELD">CISCO SPRINGS N. FIELD</option>
+                            <option value="CISCO TOWNSITE FIELD">CISCO TOWNSITE FIELD</option>
+                            <option value="CLAY BASIN FIELD">CLAY BASIN FIELD</option>
+                            <option value="CLAY HILL FIELD">CLAY HILL FIELD</option>
+                            <option value="CLEAR CREEK FIELD">CLEAR CREEK FIELD</option>
+                            <option value="CLEFT FIELD">CLEFT FIELD</option>
+                            <option value="COALVILLE GAS STORAGE">COALVILLE GAS STORAGE</option>
+                            <option value="CONE ROCK FIELD">CONE ROCK FIELD</option>
+                            <option value="COTTONWOOD RIDGE FIELD">COTTONWOOD RIDGE FIELD</option>
+                            <option value="COTTONWOOD WASH FIELD">COTTONWOOD WASH FIELD</option>
+                            <option value="COUNTY POOL FIELD">COUNTY POOL FIELD</option>
+                            <option value="COVENANT FIELD">COVENANT FIELD</option>
+                            <option value="COWBOY FIELD">COWBOY FIELD</option>
+                            <option value="COYOTE BASIN FIELD">COYOTE BASIN FIELD</option>
+                            <option value="CROOKED CANYON FIELD">CROOKED CANYON FIELD</option>
+                            <option value="DANISH WASH FIELD">DANISH WASH FIELD</option>
+                            <option value="DARK CANYON FIELD">DARK CANYON FIELD</option>
+                            <option value="DAVIS CANYON FIELD">DAVIS CANYON FIELD</option>
+                            <option value="DEADMAN (ISMAY) FIELD">DEADMAN (ISMAY) FIELD</option>
+                            <option value="DEADMAN CANYON FIELD">DEADMAN CANYON FIELD</option>
+                            <option value="DESERT CREEK FIELD">DESERT CREEK FIELD</option>
+                            <option value="DEVIL'S PLAYGROUND FIELD">DEVIL'S PLAYGROUND FIELD</option>
+                            <option value="DIAMOND RIDGE FIELD">DIAMOND RIDGE FIELD</option>
+                            <option value="DRUNKARDS WASH FIELD">DRUNKARDS WASH FIELD</option>
+                            <option value="DRY BURN FIELD">DRY BURN FIELD</option>
+                            <option value="DRY CREEK FIELD">DRY CREEK FIELD</option>
+                            <option value="DUCHESNE FIELD">DUCHESNE FIELD</option>
+                            <option value="DUST BOWL FIELD">DUST BOWL FIELD</option>
+                            <option value="E PLEASANT VALLEY FIELD">E PLEASANT VALLEY FIELD</option>
+                            <option value="EAGLE MONUMENT FIELD">EAGLE MONUMENT FIELD</option>
+                            <option value="EAST BENCH FIELD">EAST BENCH FIELD</option>
+                            <option value="EAST CANYON FIELD">EAST CANYON FIELD</option>
+                            <option value="EAST GUSHER FIELD">EAST GUSHER FIELD</option>
+                            <option value="EAST WHITE RIVER FIELD">EAST WHITE RIVER FIELD</option>
+                            <option value="EIGHT MILE FLAT FIELD">EIGHT MILE FLAT FIELD</option>
+                            <option value="EIGHT MILE FLAT NORTH FIELD">EIGHT MILE FLAT NORTH FIELD</option>
+                            <option value="ELKHORN FIELD">ELKHORN FIELD</option>
+                            <option value="EVACUATION CREEK FIELD">EVACUATION CREEK FIELD</option>
+                            <option value="FARMINGTON FIELD">FARMINGTON FIELD</option>
+                            <option value="FARNHAM DOME FIELD">FARNHAM DOME FIELD</option>
+                            <option value="FENCE CANYON FIELD">FENCE CANYON FIELD</option>
+                            <option value="FERRON FIELD">FERRON FIELD</option>
+                            <option value="FIRTH FIELD">FIRTH FIELD</option>
+                            <option value="FLAT CANYON FIELD">FLAT CANYON FIELD</option>
+                            <option value="FLAT MESA FIELD">FLAT MESA FIELD</option>
+                            <option value="FLAT ROCK FIELD">FLAT ROCK FIELD</option>
+                            <option value="GATE CANYON FIELD">GATE CANYON FIELD</option>
+                            <option value="GORDON CREEK FIELD">GORDON CREEK FIELD</option>
+                            <option value="GOTHIC MESA FIELD">GOTHIC MESA FIELD</option>
+                            <option value="GRASSY TRAIL FIELD">GRASSY TRAIL FIELD</option>
+                            <option value="GRAVEL PILE FIELD">GRAVEL PILE FIELD</option>
+                            <option value="GRAYSON FIELD">GRAYSON FIELD</option>
+                            <option value="GREATER ANETH FIELD">GREATER ANETH FIELD</option>
+                            <option value="GREATER CISCO FIELD">GREATER CISCO FIELD</option>
+                            <option value="GUSHER FIELD">GUSHER FIELD</option>
+                            <option value="GYPSUM HILLS FIELD">GYPSUM HILLS FIELD</option>
+                            <option value="HALFWAY HOLLOW FIELD">HALFWAY HOLLOW FIELD</option>
+                            <option value="HARLEY DOME FIELD">HARLEY DOME FIELD</option>
+                            <option value="HATCH FIELD">HATCH FIELD</option>
+                            <option value="HATCH POINT FIELD">HATCH POINT FIELD</option>
+                            <option value="HELL ROARING FIELD">HELL ROARING FIELD</option>
+                            <option value="HELL'S HOLE FIELD">HELL'S HOLE FIELD</option>
+                            <option value="HELPER FIELD">HELPER FIELD</option>
+                            <option value="HELPER NORTH FIELD">HELPER NORTH FIELD</option>
+                            <option value="HELPER SOUTH FIELD">HELPER SOUTH FIELD</option>
+                            <option value="HERON FIELD">HERON FIELD</option>
+                            <option value="HILL CREEK FIELD">HILL CREEK FIELD</option>
+                            <option value="HOGAN FIELD">HOGAN FIELD</option>
+                            <option value="HOGBACK RIDGE FIELD">HOGBACK RIDGE FIELD</option>
+                            <option value="HORSE CANYON FIELD">HORSE CANYON FIELD</option>
+                            <option value="HORSE POINT FIELD">HORSE POINT FIELD</option>
+                            <option value="HORSESHOE BEND FIELD">HORSESHOE BEND FIELD</option>
+                            <option value="ICE CANYON FIELD">ICE CANYON FIELD</option>
+                            <option value="INDIAN CANYON FIELD">INDIAN CANYON FIELD</option>
+                            <option value="INDIAN CREEK FIELD">INDIAN CREEK FIELD</option>
+                            <option value="INDIAN RIDGE FIELD">INDIAN RIDGE FIELD</option>
+                            <option value="ISLAND FIELD">ISLAND FIELD</option>
+                            <option value="ISMAY FIELD">ISMAY FIELD</option>
+                            <option value="JOE'S VALLEY FIELD">JOE'S VALLEY FIELD</option>
+                            <option value="KACHINA FIELD">KACHINA FIELD</option>
+                            <option value="KANE CREEK FIELD">KANE CREEK FIELD</option>
+                            <option value="KENNEDY WASH FIELD">KENNEDY WASH FIELD</option>
+                            <option value="KICKER FIELD">KICKER FIELD</option>
+                            <option value="KIVA FIELD">KIVA FIELD</option>
+                            <option value="LAKE CANYON FIELD">LAKE CANYON FIELD</option>
+                            <option value="LAST CHANCE FIELD">LAST CHANCE FIELD</option>
+                            <option value="LEFT HAND CANYON FIELD">LEFT HAND CANYON FIELD</option>
+                            <option value="LELAND BENCH FIELD">LELAND BENCH FIELD</option>
+                            <option value="LEOTA FIELD">LEOTA FIELD</option>
+                            <option value="LIGHTNING DRAW FIELD">LIGHTNING DRAW FIELD</option>
+                            <option value="LIGHTNING DRAW SE FIELD">LIGHTNING DRAW SE FIELD</option>
+                            <option value="LION MESA FIELD">LION MESA FIELD</option>
+                            <option value="LISBON FIELD">LISBON FIELD</option>
+                            <option value="LITTLE NANCY FIELD">LITTLE NANCY FIELD</option>
+                            <option value="LITTLE VALLEY FIELD">LITTLE VALLEY FIELD</option>
+                            <option value="LODGEPOLE FIELD">LODGEPOLE FIELD</option>
+                            <option value="LONE MOUNTAIN FIELD">LONE MOUNTAIN FIELD</option>
+                            <option value="LONE SPRING FIELD">LONE SPRING FIELD</option>
+                            <option value="LONG CANYON FIELD">LONG CANYON FIELD</option>
+                            <option value="LOVE FIELD">LOVE FIELD</option>
+                            <option value="MAIN CANYON FIELD">MAIN CANYON FIELD</option>
+                            <option value="MANCOS FLAT FIELD">MANCOS FLAT FIELD</option>
+                            <option value="MARSING WASH FIELD">MARSING WASH FIELD</option>
+                            <option value="MATHEWS FIELD">MATHEWS FIELD</option>
+                            <option value="MCCRACKEN SPRING FIELD">MCCRACKEN SPRING FIELD</option>
+                            <option value="MCELMO CREEK FIELD">MCELMO CREEK FIELD</option>
+                            <option value="MCELMO MESA FIELD">MCELMO MESA FIELD</option>
+                            <option value="MEXICAN HAT FIELD">MEXICAN HAT FIELD</option>
+                            <option value="MIDDLE BENCH FIELD">MIDDLE BENCH FIELD</option>
+                            <option value="MIDDLE CANYON FIELD">MIDDLE CANYON FIELD</option>
+                            <option value="MILLER CREEK FIELD">MILLER CREEK FIELD</option>
+                            <option value="MOAB GAS STORAGE">MOAB GAS STORAGE</option>
+                            <option value="MOFFAT CANAL FIELD">MOFFAT CANAL FIELD</option>
+                            <option value="MONUMENT BUTTE FIELD">MONUMENT BUTTE FIELD</option>
+                            <option value="MONUMENT FIELD">MONUMENT FIELD</option>
+                            <option value="MOON RIDGE FIELD">MOON RIDGE FIELD</option>
+                            <option value="MUSTANG FLAT FIELD">MUSTANG FLAT FIELD</option>
+                            <option value="NATURAL BUTTES FIELD">NATURAL BUTTES FIELD</option>
+                            <option value="NAVAJO CANYON FIELD">NAVAJO CANYON FIELD</option>
+                            <option value="NAVAL RESERVE FIELD">NAVAL RESERVE FIELD</option>
+                            <option value="NINE MILE CANYON FIELD">NINE MILE CANYON FIELD</option>
+                            <option value="NORTH BONANZA FIELD">NORTH BONANZA FIELD</option>
+                            <option value="NORTH PINEVIEW FIELD">NORTH PINEVIEW FIELD</option>
+                            <option value="NORTH SPRING FIELD">NORTH SPRING FIELD</option>
+                            <option value="NUTTER CANYON FIELD">NUTTER CANYON FIELD</option>
+                            <option value="OIL SPRINGS FIELD">OIL SPRINGS FIELD</option>
+                            <option value="OURAY FIELD">OURAY FIELD</option>
+                            <option value="OVERLOOK FIELD">OVERLOOK FIELD</option>
+                            <option value="PACK MOUNTAIN FIELD">PACK MOUNTAIN FIELD</option>
+                            <option value="PAIUTE KNOLL FIELD">PAIUTE KNOLL FIELD</option>
+                            <option value="PARIETTE BENCH FIELD">PARIETTE BENCH FIELD</option>
+                            <option value="PARIETTE DRAW FIELD">PARIETTE DRAW FIELD</option>
+                            <option value="PARK ROAD FIELD">PARK ROAD FIELD</option>
+                            <option value="PATTERSON CANYON FIELD">PATTERSON CANYON FIELD</option>
+                            <option value="PEAR PARK FIELD">PEAR PARK FIELD</option>
+                            <option value="PETER'S POINT FIELD">PETER'S POINT FIELD</option>
+                            <option value="PETERSON SPRINGS FIELD">PETERSON SPRINGS FIELD</option>
+                            <option value="PETES WASH FIELD">PETES WASH FIELD</option>
+                            <option value="PINE SPRINGS FIELD">PINE SPRINGS FIELD</option>
+                            <option value="PINEVIEW FIELD">PINEVIEW FIELD</option>
+                            <option value="PLEASANT VALLEY FIELD">PLEASANT VALLEY FIELD</option>
+                            <option value="POWDER SPRINGS FIELD">POWDER SPRINGS FIELD</option>
+                            <option value="PRICKLY PEAR FIELD">PRICKLY PEAR FIELD</option>
+                            <option value="RABBIT EARS FIELD">RABBIT EARS FIELD</option>
+                            <option value="RANDLETT FIELD">RANDLETT FIELD</option>
+                            <option value="RAT HOLE CANYON FIELD">RAT HOLE CANYON FIELD</option>
+                            <option value="RATHERFORD FIELD">RATHERFORD FIELD</option>
+                            <option value="RECAPTURE CREEK FIELD">RECAPTURE CREEK FIELD</option>
+                            <option value="RECAPTURE POCKET FIELD">RECAPTURE POCKET FIELD</option>
+                            <option value="RED FLAT FIELD">RED FLAT FIELD</option>
+                            <option value="RED WASH FIELD">RED WASH FIELD</option>
+                            <option value="REFUGE FIELD">REFUGE FIELD</option>
+                            <option value="RIVER BANK FIELD">RIVER BANK FIELD</option>
+                            <option value="RIVER JUNCTION FIELD">RIVER JUNCTION FIELD</option>
+                            <option value="ROAD CANYON FIELD">ROAD CANYON FIELD</option>
+                            <option value="ROBIDOUX FIELD">ROBIDOUX FIELD</option>
+                            <option value="ROCK CREEK FIELD">ROCK CREEK FIELD</option>
+                            <option value="ROCK HOUSE FIELD">ROCK HOUSE FIELD</option>
+                            <option value="ROCKWELL FLAT FIELD">ROCKWELL FLAT FIELD</option>
+                            <option value="ROOSEVELT FIELD">ROOSEVELT FIELD</option>
+                            <option value="ROZEL POINT FIELD">ROZEL POINT FIELD</option>
+                            <option value="RUNWAY FIELD">RUNWAY FIELD</option>
+                            <option value="SAGE FIELD">SAGE FIELD</option>
+                            <option value="SALT WASH FIELD">SALT WASH FIELD</option>
+                            <option value="SAN ARROYO FIELD">SAN ARROYO FIELD</option>
+                            <option value="SAND RIDGE FIELD">SAND RIDGE FIELD</option>
+                            <option value="SCOFIELD FIELD">SCOFIELD FIELD</option>
+                            <option value="SEEP RIDGE B FIELD">SEEP RIDGE B FIELD</option>
+                            <option value="SEEP RIDGE FIELD">SEEP RIDGE FIELD</option>
+                            <option value="SEGUNDO CANYON FIELD">SEGUNDO CANYON FIELD</option>
+                            <option value="SEIBER NOSE FIELD">SEIBER NOSE FIELD</option>
+                            <option value="SERVICEBERRY FIELD">SERVICEBERRY FIELD</option>
+                            <option value="SHAFER CANYON FIELD">SHAFER CANYON FIELD</option>
+                            <option value="SHUMWAY POINT FIELD">SHUMWAY POINT FIELD</option>
+                            <option value="SODA SPRING FIELD">SODA SPRING FIELD</option>
+                            <option value="SOLDIER CREEK FIELD">SOLDIER CREEK FIELD</option>
+                            <option value="SOUTH CANYON FIELD">SOUTH CANYON FIELD</option>
+                            <option value="SOUTH ISMAY FIELD">SOUTH ISMAY FIELD</option>
+                            <option value="SOUTH MYTON BENCH FIELD">SOUTH MYTON BENCH FIELD</option>
+                            <option value="SOUTH PINE RIDGE FIELD">SOUTH PINE RIDGE FIELD</option>
+                            <option value="SOUTHMAN CANYON FIELD">SOUTHMAN CANYON FIELD</option>
+                            <option value="SOWER CANYON FIELD">SOWER CANYON FIELD</option>
+                            <option value="SQUAW CANYON FIELD">SQUAW CANYON FIELD</option>
+                            <option value="SQUAW POINT FIELD">SQUAW POINT FIELD</option>
+                            <option value="STAGECOACH FIELD">STAGECOACH FIELD</option>
+                            <option value="STARR FLAT FIELD">STARR FLAT FIELD</option>
+                            <option value="STARVATION FIELD">STARVATION FIELD</option>
+                            <option value="STATE LINE FIELD">STATE LINE FIELD</option>
+                            <option value="STONE CABIN FIELD">STONE CABIN FIELD</option>
+                            <option value="SWEETWATER CANYON FIELD">SWEETWATER CANYON FIELD</option>
+                            <option value="SWEETWATER RIDGE FIELD">SWEETWATER RIDGE FIELD</option>
+                            <option value="TEN MILE FIELD">TEN MILE FIELD</option>
+                            <option value="TIN CUP MESA FIELD">TIN CUP MESA FIELD</option>
+                            <option value="TOHONADLA FIELD">TOHONADLA FIELD</option>
+                            <option value="TOWER FIELD">TOWER FIELD</option>
+                            <option value="TREATY BOUNDARY FIELD">TREATY BOUNDARY FIELD</option>
+                            <option value="TURNER BLUFF FIELD">TURNER BLUFF FIELD</option>
+                            <option value="TWELVE MILE WASH FIELD">TWELVE MILE WASH FIELD</option>
+                            <option value="UCOLO FIELD">UCOLO FIELD</option>
+                            <option value="UINTAH FIELD">UINTAH FIELD</option>
+                            <option value="UNNAMED  31-15S-24E">UNNAMED 31-15S-24E</option>
+                            <option value="UNNAMED 1-14-37S-23E">UNNAMED 1-14-37S-23E</option>
+                            <option value="UNNAMED 10-15S-8E">UNNAMED 10-15S-8E</option>
+                            <option value="UNNAMED 11-11S-19E">UNNAMED 11-11S-19E</option>
+                            <option value="UNNAMED 12-9S-19E">UNNAMED 12-9S-19E</option>
+                            <option value="UNNAMED 12-D5">UNNAMED 12-D5</option>
+                            <option value="UNNAMED 13-38S-23E">UNNAMED 13-38S-23E</option>
+                            <option value="UNNAMED 13-4S-1E">UNNAMED 13-4S-1E</option>
+                            <option value="UNNAMED 13-8S-23E">UNNAMED 13-8S-23E</option>
+                            <option value="UNNAMED 13-D5">UNNAMED 13-D5</option>
+                            <option value="UNNAMED 14-6S-20E">UNNAMED 14-6S-20E</option>
+                            <option value="UNNAMED 15-17S-23E">UNNAMED 15-17S-23E</option>
+                            <option value="UNNAMED 15-36S-23E">UNNAMED 15-36S-23E</option>
+                            <option value="UNNAMED 15-9S-24E">UNNAMED 15-9S-24E</option>
+                            <option value="UNNAMED 16-38S-26E">UNNAMED 16-38S-26E</option>
+                            <option value="UNNAMED 18-23S-17E">UNNAMED 18-23S-17E</option>
+                            <option value="UNNAMED 18-2N-7E">UNNAMED 18-2N-7E</option>
+                            <option value="UNNAMED 18-36S-25E">UNNAMED 18-36S-25E</option>
+                            <option value="UNNAMED 18-6S-21E">UNNAMED 18-6S-21E</option>
+                            <option value="UNNAMED 2-11S-19E">UNNAMED 2-11S-19E</option>
+                            <option value="UNNAMED 2-14-37S-23E">UNNAMED 2-14-37S-23E</option>
+                            <option value="UNNAMED 2-16S-23E">UNNAMED 2-16S-23E</option>
+                            <option value="UNNAMED 2-C2">UNNAMED 2-C2</option>
+                            <option value="UNNAMED 20-14S-9E">UNNAMED 20-14S-9E</option>
+                            <option value="UNNAMED 20-7S-21E">UNNAMED 20-7S-21E</option>
+                            <option value="UNNAMED 21-4S-1E">UNNAMED 21-4S-1E</option>
+                            <option value="UNNAMED 22-10S-17E">UNNAMED 22-10S-17E</option>
+                            <option value="UNNAMED 23-13S-20E">UNNAMED 23-13S-20E</option>
+                            <option value="UNNAMED 23-8S-17E">UNNAMED 23-8S-17E</option>
+                            <option value="UNNAMED 24-2S-5W">UNNAMED 24-2S-5W</option>
+                            <option value="UNNAMED 25-9S-19E">UNNAMED 25-9S-19E</option>
+                            <option value="UNNAMED 26-4S-1E">UNNAMED 26-4S-1E</option>
+                            <option value="UNNAMED 26-8S-24E">UNNAMED 26-8S-24E</option>
+                            <option value="UNNAMED 26-D1E">UNNAMED 26-D1E</option>
+                            <option value="UNNAMED 26-E5">UNNAMED 26-E5</option>
+                            <option value="UNNAMED 27-11S-20E">UNNAMED 27-11S-20E</option>
+                            <option value="UNNAMED 27-12S-15E">UNNAMED 27-12S-15E</option>
+                            <option value="UNNAMED 27-17S-25E">UNNAMED 27-17S-25E</option>
+                            <option value="UNNAMED 27-8S-24E">UNNAMED 27-8S-24E</option>
+                            <option value="UNNAMED 28-Z1E">UNNAMED 28-Z1E</option>
+                            <option value="UNNAMED 29-10S-17E">UNNAMED 29-10S-17E</option>
+                            <option value="UNNAMED 31-37S-25E">UNNAMED 31-37S-25E</option>
+                            <option value="UNNAMED 31-8S-23E">UNNAMED 31-8S-23E</option>
+                            <option value="UNNAMED 34-14S-9E">UNNAMED 34-14S-9E</option>
+                            <option value="UNNAMED 34-37S-23E">UNNAMED 34-37S-23E</option>
+                            <option value="UNNAMED 34-37S-25E">UNNAMED 34-37S-25E</option>
+                            <option value="UNNAMED 34-7S-21E">UNNAMED 34-7S-21E</option>
+                            <option value="UNNAMED 4-41S-23E">UNNAMED 4-41S-23E</option>
+                            <option value="UNNAMED 4-9S-24E">UNNAMED 4-9S-24E</option>
+                            <option value="UNNAMED 5-11S-20E">UNNAMED 5-11S-20E</option>
+                            <option value="UNNAMED 5-16S-22E">UNNAMED 5-16S-22E</option>
+                            <option value="UNNAMED 5-7S-21E">UNNAMED 5-7S-21E</option>
+                            <option value="UNNAMED 6-30S-25E">UNNAMED 6-30S-25E</option>
+                            <option value="UNNAMED 7-31S-26E">UNNAMED 7-31S-26E</option>
+                            <option value="UNNAMED 7-37S-24E">UNNAMED 7-37S-24E</option>
+                            <option value="UNNAMED 7-C1">UNNAMED 7-C1</option>
+                            <option value="UNNAMED 8-7S-21E">UNNAMED 8-7S-21E</option>
+                            <option value="UNNAMED 9-16E-22E">UNNAMED 9-16E-22E</option>
+                            <option value="UNNAMED 9-17S-23E">UNNAMED 9-17S-23E</option>
+                            <option value="UNNAMED 9-36S-23E">UNNAMED 9-36S-23E</option>
+                            <option value="UNNAMED 9-39S-26E">UNNAMED 9-39S-26E</option>
+                            <option value="UNNAMED 9-40S-25E">UNNAMED 9-40S-25E</option>
+                            <option value="UPPER VALLEY FIELD">UPPER VALLEY FIELD</option>
+                            <option value="UTELAND BUTTE FIELD">UTELAND BUTTE FIELD</option>
+                            <option value="VIRGIN FIELD">VIRGIN FIELD</option>
+                            <option value="WALKER HOLLOW FIELD">WALKER HOLLOW FIELD</option>
+                            <option value="WEST GUSHER FIELD">WEST GUSHER FIELD</option>
+                            <option value="WEST WILLOW CREEK FIELD">WEST WILLOW CREEK FIELD</option>
+                            <option value="WESTWATER FIELD">WESTWATER FIELD</option>
+                            <option value="WHISKEY CREEK FIELD">WHISKEY CREEK FIELD</option>
+                            <option value="WHITE MESA FIELD">WHITE MESA FIELD</option>
+                            <option value="WHITE RIVER FIELD">WHITE RIVER FIELD</option>
+                            <option value="WHITEBELLY WASH FIELD">WHITEBELLY WASH FIELD</option>
+                            <option value="WILD STALLION FIELD">WILD STALLION FIELD</option>
+                            <option value="WILKIN RIDGE FIELD">WILKIN RIDGE FIELD</option>
+                            <option value="WILSON CANYON FIELD">WILSON CANYON FIELD</option>
+                            <option value="WINDY RIDGE EAST FIELD">WINDY RIDGE EAST FIELD</option>
+                            <option value="WINDY RIDGE FIELD">WINDY RIDGE FIELD</option>
+                            <option value="WINDY RIDGE WEST FIELD">WINDY RIDGE WEST FIELD</option>
+                            <option value="WINTER CAMP FIELD">WINTER CAMP FIELD</option>
+                            <option value="WOLF POINT FIELD">WOLF POINT FIELD</option>
+                            <option value="WONSITS VALLEY FIELD">WONSITS VALLEY FIELD</option>
+                            <option value="WOODSIDE FIELD">WOODSIDE FIELD</option>
+                            <option value="YELLOW ROCK FIELD">YELLOW ROCK FIELD</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button data-dojo-type="dijit/form/Button" id="ZMfield" type="submit" onclick="AGRC.app.zoomToField();">ZOOM</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--    ======================ZOOM TO COUNTY======================-->
+    <div data-dojo-type="dijit/Dialog" id="zoomCountyDialog" data-dojo-props='title: "Zoom to County"'>
+        <div id='findCounty' class='find-widgets'></div>
+    </div>
+    <!--    ======================ZOOM TO API======================-->
+    <div data-dojo-type="dijit/Dialog" id="zoomWellApiDialog" data-dojo-props='title: "Zoom to Well by API"' class='dialog-with-magic-zoom'>
+        <div id='magic-zoom-api'></div>
+    </div>
+    <div data-dojo-type="dijit/Dialog" id="zoomWellNameDialog" data-dojo-props="title: 'Zoom to Well by Name'" class="dialog-with-magic-zoom">
+        <div id="magic-zoom-name"></div>
+    </div>
+    <!--    ======================ZOOM TO WELL BY OPERATOR======================-->
+    <div data-dojo-type="dijit/Dialog" id="zoomWellOperDialog" data-dojo-props='title: "Zoom to Well(s) by Operator"' class='dialog-with-magic-zoom'>
+        <div id='magic-zoom-oper'></div>
+    </div>
+    <!--    ======================ZOOM TO FIELD BY OPERATOR======================-->
+    <div data-dojo-type="dijit/Dialog" id="zoomFieldOperDialog" data-dojo-props='title: "Zoom to Unit by Operator"' class='dialog-with-magic-zoom'>
+        <div id='magic-zoom-foper'></div>
+    </div>
+    <!--    ======================ZOOM TO TRS======================-->
+    <div data-dojo-type="dijit/Dialog" id="zoomTSHDialog" data-dojo-props='title: "Find Township-Range-Section"'>
+        <div id="TRS"></div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+.magic-zoom {
+	padding: 5px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	z-index: 25;
+	width: 200px;
+	height: 44px;
+}
+.magic-zoom .text-box {
+	box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+}
+.magic-zoom .input-group,
+.magic-zoom .matches-table {
+	width: 190px;
+}
+.magic-zoom [data-dojo-attach-point='matchesList'] {
+	display: block;
+	width: 100%;
+}
+.magic-zoom .matches-table {
+	background-color: white;
+	font-size: 12px;
+	display: none;
+	float: left;
+	z-index: 99;
+	position: absolute;
+	top: 40px;
+}
+.magic-zoom .matches-table li.match:hover, 
+.magic-zoom .matches-table .highlighted-row {
+	color: #ffffff;
+	background-color: #428bca;
+	cursor: pointer;
+}
+.magic-zoom .matches-table li {
+	padding: 2px 12px;
+}
+.magic-zoom span.glyphicon-search {
+	top: 0;
+}
+.magic-zoom li.dropdown-header {
+	display: none;
+}
