@@ -1,6 +1,5 @@
 define([
     'agrc/widgets/locate/FindAddress',
-    'agrc/widgets/locate/MagicZoom',
     'agrc/widgets/locate/TRSsearch',
     'agrc/widgets/map/BaseMap',
     'agrc/widgets/map/BaseMapSelector',
@@ -43,6 +42,7 @@ define([
     'esri/tasks/query',
     'esri/tasks/QueryTask',
 
+    'sherlock/providers/MapService',
     'sherlock/providers/WebAPI',
     'sherlock/Sherlock',
 
@@ -57,7 +57,6 @@ define([
     'dijit/Toolbar'
 ], function (
     FindAddress,
-    MagicZoom,
     TRSsearch,
     BaseMap,
     BaseMapSelector,
@@ -100,6 +99,7 @@ define([
     Query,
     QueryTask,
 
+    MapService,
     WebAPI,
     Sherlock
 ) {
@@ -190,62 +190,63 @@ define([
                 registry.byId('zoomCountyDialog').hide();
             });
 
-            var api = new MagicZoom({
+            var apiProvider = new MapService(
+                config.urls.ogmMapService + '/0',
+                config.fieldNames.API
+            );
+            var api = new Sherlock({
+                provider: apiProvider,
                 promptMessage: 'Please type an API...',
-                mapServiceURL: config.urls.ogmMapService,
-                searchLayerIndex: 0,
-                searchField: 'API',
                 map: this.map,
                 maxResultsToDisplay: 8
             }, 'magic-zoom-api');
             api.startup();
-
-            // hide dialog when magic zoom zooms to a feature
-            aspect.after(api, '_setMatch', function () {
+            aspect.after(api, 'onZoomed', function () {
                 registry.byId('zoomWellApiDialog').hide();
             });
 
-            var name = new MagicZoom({
+            var wellProvider = new MapService(
+                config.urls.ogmMapService + '/0',
+                config.fieldNames.WELL_NAME
+            );
+            var name = new Sherlock({
+                provider: wellProvider,
                 promptMessage: 'Please type a name...',
-                mapServiceURL: config.urls.ogmMapService,
-                searchLayerIndex: 0,
-                searchField: 'WELL_NAME',
                 map: this.map,
                 maxResultsToDisplay: 8
             }, 'magic-zoom-name');
             name.startup();
-
-            aspect.after(name, '_setMatch', function () {
+            aspect.after(name, 'onZoomed', function () {
                 registry.byId('zoomWellNameDialog').hide();
             });
 
-            var oper = new MagicZoom({
+            var operProvider = new MapService(
+                config.urls.ogmMapService + '/0',
+                config.fieldNames.COMPANY_NAME
+            );
+            var oper = new Sherlock({
+                provider: operProvider,
                 promptMessage: 'Please begin typing an Operator...',
-                mapServiceURL: config.urls.ogmMapService,
-                searchLayerIndex: 0,
-                searchField: 'COMPANY_NAME',
                 map: this.map,
                 maxResultsToDisplay: 8
             }, 'magic-zoom-oper');
             oper.startup();
-
-            // hide dialog when magic zoom zooms to a feature
-            aspect.after(oper, '_setMatch', function () {
+            aspect.after(oper, 'onZoomed', function () {
                 registry.byId('zoomWellOperDialog').hide();
             });
 
-            var foper = new MagicZoom({
+            var foperProvider = new MapService(
+                config.urls.ogmMapService + '/8',
+                config.fieldNames.OPERATOR
+            );
+            var foper = new Sherlock({
+                provider: foperProvider,
                 promptMessage: 'Please begin typing an Operator...',
-                mapServiceURL: config.urls.ogmMapService,
-                searchLayerIndex: 8,
-                searchField: 'OPERATOR',
                 map: this.map,
                 maxResultsToDisplay: 8
             }, 'magic-zoom-foper');
             oper.startup();
-
-            // hide dialog when magic zoom zooms to a feature
-            aspect.after(foper, '_setMatch', function () {
+            aspect.after(foper, 'onZoomed', function () {
                 registry.byId('zoomFieldOperDialog').hide();
             });
 
