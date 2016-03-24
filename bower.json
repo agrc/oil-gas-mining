@@ -12,11 +12,15 @@
   "resolutions": {
     "dojo": "v1.10.4/esri-3.14.0",
     "dgrid": "0.3.17/esri-3.14.0",
-    "xstyle": "0.1.3/esri-3.14.0"
+    "xstyle": "0.1.3/esri-3.14.0",
+    "esri": "~3.16",
+    "agrc": "~4.1.0",
+    "spinjs": "~2.3.2"
   },
   "dependencies": {
     "esri": "arcgis-js-api#~3.16",
     "agrc": "agrc-widgets#~4.1.0",
-    "ijit": "agrc-ijit#~3.1.1"
+    "ijit": "agrc-ijit#~3.1.1",
+    "sherlock": "agrc-sherlock#~1.0.0"
   }
 }

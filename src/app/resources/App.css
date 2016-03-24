@@ -8,6 +8,7 @@
 @import '../../agrc/resources/locate/TRSsearch.css';
 @import '../../bootstrap/dist/css/bootstrap.css';
 @import '../../bootstrap/dist/css/bootstrap-theme.css';
+@import '../../sherlock/resources/Sherlock.css';
 
 body, html, .app {
     width: 100%;
@@ -53,6 +54,12 @@ body, html, .app {
     vertical-align: middle;
     height: 19px;
     display: inline-block;
+}
+.sherlock {
+    position: relative;
+}
+#zoomCountyDialog .dijitDialogPaneContent {
+    height: 200px;
 }
 
 /* SIDE BAR */

@@ -1,6 +1,5 @@
 define([
     'agrc/widgets/locate/FindAddress',
-    'agrc/widgets/locate/FindGeneric',
     'agrc/widgets/locate/MagicZoom',
     'agrc/widgets/locate/TRSsearch',
     'agrc/widgets/map/BaseMap',
@@ -44,6 +43,9 @@ define([
     'esri/tasks/query',
     'esri/tasks/QueryTask',
 
+    'sherlock/providers/WebAPI',
+    'sherlock/Sherlock',
+
     'dijit/Dialog',
     'dijit/form/DropDownButton',
     'dijit/layout/BorderContainer',
@@ -55,7 +57,6 @@ define([
     'dijit/Toolbar'
 ], function (
     FindAddress,
-    FindGeneric,
     MagicZoom,
     TRSsearch,
     BaseMap,
@@ -97,7 +98,10 @@ define([
     IdentifyParameters,
     IdentifyTask,
     Query,
-    QueryTask
+    QueryTask,
+
+    WebAPI,
+    Sherlock
 ) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         // summary:
@@ -171,13 +175,18 @@ define([
                 registry.byId('zoomTSHDialog').hide();
             });
 
-            var county = new FindGeneric({
+            var provider = new WebAPI(
+                config.apiKey,
+                'SGID10.BOUNDARIES.Counties',
+                'NAME'
+            );
+            var county = new Sherlock({
+                provider: provider,
                 map: this.map,
-                layerName: 'SGID10.BOUNDARIES.Counties',
-                searchFieldName: 'NAME',
-                label: 'Counties'
+                label: 'Counties',
+                maxResultsToDisplay: 5
             }, 'findCounty');
-            aspect.after(county, '_onFind', function () {
+            aspect.after(county, 'onZoomed', function () {
                 registry.byId('zoomCountyDialog').hide();
             });
 

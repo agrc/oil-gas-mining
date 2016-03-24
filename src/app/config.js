@@ -5,10 +5,7 @@ define([
     has,
     xhr
 ) {
-    var config = {
-        // errorLogger: ijit.modules.ErrorLogger
-        errorLogger: null,
-
+    var config = window.AGRC = {
         // app: app.App
         //      global reference to App
         app: null,
@@ -17,15 +14,10 @@ define([
         //      The version number.
         version: '2.0.0',
 
-        // apiKey: String
-        //      The api key used for services on api.mapserv.utah.gov
-        apiKey: 'AGRC-63E1FF17767822', // localhost
-        // apiKey: 'AGRC-A94B063C533889', // key for atlas.utah.gov
-
         urls: {
             ogmMapService: '/ArcGIS/rest/services/OilGasMining/MapServer',
             plssMapService: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahPLSS/MapServer',
-            geometryService: 'http://mapserv.utah.gov/ArcGIS/rest/services/Geometry/GeometryServer'
+            geometryService: '/ArcGIS/rest/services/Geometry/GeometryServer'
         },
 
         fieldNames: {

@@ -2,6 +2,7 @@
 dist/
 node_modules/
 secrets.json
+src/agrc-jasmine-matchers/
 src/agrc/
 src/bootstrap/
 src/components-jasmine/
@@ -21,6 +22,7 @@ src/moment/
 src/mustache/
 src/put-selector/
 src/secrets.json
+src/sherlock/
 src/spin.js/
 src/spinjs/
 src/util/
