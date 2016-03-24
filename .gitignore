@@ -1,6 +1,9 @@
 .DS_Store
 dist/
+node_modules/
+secrets.json
 src/dijit
 src/dojo
 src/dojox
+src/secrets.json
 src/util
