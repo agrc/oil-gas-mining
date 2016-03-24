@@ -35,7 +35,6 @@ define([
     'esri/symbols/SimpleLineSymbol',
     'esri/symbols/SimpleMarkerSymbol',
     'esri/tasks/FindParameters',
-    'esri/tasks/FindTask',
     'esri/tasks/GeometryService',
     'esri/tasks/IdentifyParameters',
     'esri/tasks/IdentifyTask',
@@ -92,7 +91,6 @@ define([
     SimpleLineSymbol,
     SimpleMarkerSymbol,
     FindParameters,
-    FindTask,
     GeometryService,
     IdentifyParameters,
     IdentifyTask,
@@ -261,16 +259,15 @@ define([
 
             var fieldNames = config.fieldNames;
 
-            //build wells query task
+            // query task used for download
             this.pointQueryTask = new QueryTask(config.urls.ogmMapService + '/0');
-            //build query filter
             this.pointQuery = new Query();
             this.pointQuery.returnGeometry = false;
             this.pointQuery.outFields = [fieldNames.WELL_NAME, fieldNames.API, fieldNames.ACCT_NUM, fieldNames.COMPANY_NAME, fieldNames.FIELD_NUM, fieldNames.LOCATION_SURF_WCR, fieldNames.GIS_STAT_TYPE];
             this.pointQuery.spatialRelationship = Query.SPATIAL_REL_CONTAINS;
 
+            // identify
             this.identifyTask = new IdentifyTask(config.urls.ogmMapService);
-
             this.identifyParams = new IdentifyParameters();
             this.identifyParams.tolerance = 3;
             this.identifyParams.returnGeometry = true;
@@ -285,33 +282,11 @@ define([
                 new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
                     new Color([255, 0, 0, 0.3]), 2), new Color([255, 255, 0, 0.5]));
 
-            //create find task with url to map service
-            this.findTask = new FindTask('http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseImagery-Detailed/MapServer');
-            //create find parameters and define known values
-            this.findParams = new FindParameters();
-            this.findParams.returnGeometry = true;
-            this.findParams.layerIds = [0];
-            this.findParams.searchFields = ['NAME'];
-            this.findParams.contains = false;
 
-            //            //build APIquery task
-            this.apiQueryTask = new QueryTask(config.urls.ogmMapService + '/1');
-            //build query filter
-            this.apiQueryParams = new Query();
-            this.apiQueryParams.outFields = ['API'];
-            this.apiQueryParams.returnGeometry = true;
-
-            //build Fieldquery task
+            // zoom to field
             this.fieldQueryTask = new QueryTask(config.urls.ogmMapService + '/6');
-            //build query filter
             this.fieldQueryParams = new Query();
             this.fieldQueryParams.returnGeometry = true;
-
-            //build Countyquery task
-            this.countyQueryTask = new QueryTask('http://mapserv.utah.gov/ArcGIS/rest/services/UtahBaseImagery-Detailed/MapServer/1');
-            //build query filter
-            this.countyQueryParams = new Query();
-            this.countyQueryParams.returnGeometry = true;
 
             this.gsvc = new GeometryService(config.urls.geometryService);
         },
@@ -321,7 +296,8 @@ define([
             console.log('app.App:initMap', arguments);
 
             this.map = new BaseMap(this.mapDiv, {
-                useDefaultBaseMap: false
+                useDefaultBaseMap: false,
+                router: true
             });
 
             var s;
@@ -736,7 +712,7 @@ define([
             var fieldNames = config.fieldNames;
             if (layerResults.features[0].geometry.type === 'point') {
                 var apiArray = [];
-                content += '<b style="color: #1c56a3">Identify Results:<br /></b>'; ////////<hr /></b>';
+                content += '<b style="color: #1c56a3">Identify Results:<br /></b>';
                 content += '&nbsp;&nbsp;<span style="color: red;">' + layerResults.features.length + ' Well(s) Found</span><hr />';
                 dom.byId('mapclick').innerHTML = content;
                 for (var i = 0, il = layerResults.features.length; i < il; i++) {
@@ -752,18 +728,18 @@ define([
                     var tbody = domConstruct.create('tbody', null, table);
 
 
-                    addRow('API', atts[fieldNames.API], tbody);
-                    addRow('Well Name', atts[fieldNames.WELL_NAME], tbody);
-                    addRow('Current Operator', atts[fieldNames.COMPANY_NAME], tbody);
-                    addRow('Confidential?', atts[fieldNames.CONF_FLAG], tbody);
-                    addRow('Well Status', atts[fieldNames.WELL_STATUS_MAIN], tbody);
-                    addRow('Well Type', atts[fieldNames.WELL_TYPE_MAIN], tbody);
-                    addRow('Original Completion Date', atts[fieldNames.ORIG_COMPL_DATE], tbody);
-                    addRow('Abandoned', atts[fieldNames.LA_PA_DATE], tbody);
-                    addRow('Cumulative Oil Production', atts[fieldNames.TOTAL_CUM_OIL], tbody);
-                    addRow('Cumulative Gas Production', atts[fieldNames.TOTAL_CUM_GAS], tbody);
-                    addRow('Cumulative Water Production', atts[fieldNames.TOTAL_CUM_WATER], tbody);
-                    addRow('Surface Location:', '', tbody);
+                    addRow('API', atts[fieldNames.API], false, tbody);
+                    addRow('Well Name', atts[fieldNames.WELL_NAME], false, tbody);
+                    addRow('Current Operator', atts[fieldNames.COMPANY_NAME], false, tbody);
+                    addRow('Confidential?', atts[fieldNames.CONF_FLAG], false, tbody);
+                    addRow('Well Status', atts[fieldNames.WELL_STATUS_MAIN], false, tbody);
+                    addRow('Well Type', atts[fieldNames.WELL_TYPE_MAIN], false, tbody);
+                    addRow('Original Completion Date', atts[fieldNames.ORIG_COMPL_DATE], false, tbody);
+                    addRow('Abandoned', atts[fieldNames.LA_PA_DATE], false, tbody);
+                    addRow('Cumulative Oil Production', atts[fieldNames.TOTAL_CUM_OIL], false, tbody);
+                    addRow('Cumulative Gas Production', atts[fieldNames.TOTAL_CUM_GAS], false, tbody);
+                    addRow('Cumulative Water Production', atts[fieldNames.TOTAL_CUM_WATER], false, tbody);
+                    addRow('Surface Location:', '', false, tbody);
                     addRow('Footages', atts[fieldNames.LOCATION_SURF_WCR], true, tbody);
                     addRow('UTM - Northing', atts[fieldNames.COORDS_SURF_N], true, tbody);
                     addRow('UTM - Easting', atts[fieldNames.COORDS_SURF_E], true, tbody);
@@ -780,10 +756,10 @@ define([
                     atts[fieldNames.MERIDIAN], true, tbody);
                     addRow('Field', atts[fieldNames.FIELD_NAME], true, tbody);
                     addRow('County', atts[fieldNames.COUNTY], true, tbody);
-                    addRow('Elevation', atts[fieldNames.ELEVATION], tbody);
-                    addRow('Original Total Depth', atts[fieldNames.ORIG_TD], tbody);
-                    addRow('Directional', atts[fieldNames.DIRECTIONAL], tbody);
-                    addRow('Multiple Laterals', atts[fieldNames.MULTI_LEG_COUNT], tbody);
+                    addRow('Elevation', atts[fieldNames.ELEVATION], false, tbody);
+                    addRow('Original Total Depth', atts[fieldNames.ORIG_TD], false, tbody);
+                    addRow('Directional', atts[fieldNames.DIRECTIONAL], false, tbody);
+                    addRow('Multiple Laterals', atts[fieldNames.MULTI_LEG_COUNT], false, tbody);
 
                     // check for oil production data
                     var cutOffDate = new Date('1/1/1984');
