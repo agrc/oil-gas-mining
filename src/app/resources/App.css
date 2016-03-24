@@ -5,10 +5,9 @@
 @import '../../ijit/themes/standard/layout/PaneStack.css';
 @import '../../agrc/resources/map/BaseMapSelector.css';
 @import '../../agrc/resources/locate/FindAddress.css';
-@import '../../agrc/resources/locate/MagicZoom.css';
-@import '../../agrc/resources/locate/FindGeneric.css';
 @import '../../agrc/resources/locate/TRSsearch.css';
-@import '../../bootstrap/css/bootstrap-theme.css';
+@import '../../bootstrap/dist/css/bootstrap.css';
+@import '../../bootstrap/dist/css/bootstrap-theme.css';
 
 body, html, .app {
     width: 100%;

@@ -1,7 +1,7 @@
 define([
 ], function (
 ) {
-    window.AGRC = {
+    var config = {
         // errorLogger: ijit.modules.ErrorLogger
         errorLogger: null,
 
@@ -58,5 +58,5 @@ define([
         }
     };
 
-    return window.AGRC;
+    return config;
 });
