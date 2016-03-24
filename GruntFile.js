@@ -175,7 +175,7 @@ module.exports = function (grunt) {
     ]);
     grunt.registerTask('build-prod', [
         'clean:build',
-        'replace:prod',
+        'processhtml',
         'dojo:prod',
         'copy:main'
     ]);
@@ -187,7 +187,7 @@ module.exports = function (grunt) {
     ]);
     grunt.registerTask('build-stage', [
         'clean:build',
-        'replace:stage',
+        'processhtml',
         'dojo:stage',
         'copy:main'
     ]);
