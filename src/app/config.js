@@ -1,5 +1,9 @@
 define([
+    'dojo/has',
+    'dojo/request/xhr'
 ], function (
+    has,
+    xhr
 ) {
     var config = {
         // errorLogger: ijit.modules.ErrorLogger
@@ -57,6 +61,27 @@ define([
             MULTI_LEG_COUNT: 'MULTI_LEG_COUNT'
         }
     };
+
+    if (has('agrc-build') === 'prod') {
+        // mapserv.utah.gov
+        config.apiKey = 'AGRC-1B07B497348512';
+        config.quadWord = '';
+    } else if (has('agrc-build') === 'stage') {
+        // test.mapserv.utah.gov
+        config.apiKey = 'AGRC-AC122FA9671436';
+        config.quadWord = '';
+    } else {
+        // localhost
+        xhr(require.baseUrl + 'secrets.json', {
+            handleAs: 'json',
+            sync: true
+        }).then(function (secrets) {
+            config.quadWord = secrets.quadWord;
+            config.apiKey = secrets.apiKey;
+        }, function () {
+            throw 'Error getting secrets!';
+        });
+    }
 
     return config;
 });
