@@ -21,6 +21,6 @@
     "esri": "arcgis-js-api#~3.16",
     "agrc": "agrc-widgets#~4.1.0",
     "ijit": "agrc-ijit#~3.1.1",
-    "sherlock": "agrc-sherlock#~1.0.0"
+    "sherlock": "agrc-sherlock#b8e00039bb1dd51c3bed0adc8a40b1a7fc2b71d4"
   }
 }

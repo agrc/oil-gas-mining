@@ -166,8 +166,7 @@ define([
 
             var trs = new TRSsearch({
                 map: this.map,
-                AGRCwebServiceUserName: 'agrc-oilgasmining',
-                buttonText: 'Zoom'
+                apiKey: config.apiKey
             }, 'TRS');
             aspect.after(trs, 'zoom', function () {
                 registry.byId('zoomTSHDialog').hide();
@@ -184,7 +183,7 @@ define([
                 label: 'Counties',
                 maxResultsToDisplay: 5
             }, 'findCounty');
-            aspect.after(county, 'onZoomed', function () {
+            county.on('zoomed', function () {
                 registry.byId('zoomCountyDialog').hide();
             });
 
@@ -199,7 +198,7 @@ define([
                 maxResultsToDisplay: 8
             }, 'magic-zoom-api');
             api.startup();
-            aspect.after(api, 'onZoomed', function () {
+            api.on('zoomed', function () {
                 registry.byId('zoomWellApiDialog').hide();
             });
 
@@ -214,7 +213,7 @@ define([
                 maxResultsToDisplay: 8
             }, 'magic-zoom-name');
             name.startup();
-            aspect.after(name, 'onZoomed', function () {
+            name.on('zoomed', function () {
                 registry.byId('zoomWellNameDialog').hide();
             });
 
@@ -229,7 +228,7 @@ define([
                 maxResultsToDisplay: 8
             }, 'magic-zoom-oper');
             oper.startup();
-            aspect.after(oper, 'onZoomed', function () {
+            oper.on('zoomed', function () {
                 registry.byId('zoomWellOperDialog').hide();
             });
 
@@ -244,7 +243,7 @@ define([
                 maxResultsToDisplay: 8
             }, 'magic-zoom-foper');
             oper.startup();
-            aspect.after(foper, 'onZoomed', function () {
+            foper.on('zoomed', function () {
                 registry.byId('zoomFieldOperDialog').hide();
             });
 

@@ -7,7 +7,6 @@
 @import '../../agrc/resources/locate/FindAddress.css';
 @import '../../agrc/resources/locate/TRSsearch.css';
 @import '../../bootstrap/dist/css/bootstrap.css';
-@import '../../bootstrap/dist/css/bootstrap-theme.css';
 @import '../../sherlock/resources/Sherlock.css';
 
 body, html, .app {
@@ -57,9 +56,17 @@ body, html, .app {
 }
 .sherlock {
     position: relative;
+    width: 300px;
+}
+.sherlock .input-group,
+.sherlock .matches-table {
+    width: 290px;
 }
 #zoomCountyDialog .dijitDialogPaneContent {
     height: 200px;
+}
+.trssearch.agrc-trs {
+    width: auto;
 }
 
 /* SIDE BAR */
@@ -127,7 +134,7 @@ body, html, .app {
 }
 .dialog-with-magic-zoom {
     height: 330px;
-    width: 230px;
+    width: 320px;
 }
 .dialog-with-magic-zoom .dijitDialogPaneContent {
     height: 100% !important;
