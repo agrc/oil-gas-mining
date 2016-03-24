@@ -30,6 +30,12 @@ module.exports = function (grunt) {
         'src/index.html',
         'src/ChangeLog.html'
     ];
+    var bumpFiles = [
+        'package.json',
+        'bower.json',
+        'src/app/package.json',
+        'src/app/config.js'
+    ];
 
     var secrets;
     try {
@@ -57,6 +63,13 @@ module.exports = function (grunt) {
     }
 
     grunt.initConfig({
+        bump: {
+            options: {
+                files: bumpFiles,
+                commitFiles: bumpFiles.concat('src/ChangeLog.html'),
+                push: false
+            }
+        },
         clean: {
             build: ['dist'],
             deploy: ['deploy']

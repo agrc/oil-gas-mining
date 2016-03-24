@@ -1,6 +1,7 @@
 {
   "name": "oil-gas-mining",
   "description": "Oil Gas Mining Application",
+  "version": "2.0.0",
   "main": "",
   "authors": [
     "Scott Davis <stdavis@utah.gov>"
