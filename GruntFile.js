@@ -96,7 +96,7 @@ module.exports = function (grunt) {
                 dojo: 'src/dojo/dojo.js',
                 load: 'build',
                 releaseDir: '../dist',
-                require: 'src/app/run.js',
+                requires: ['src/app/run.js', 'src/app/packages.js'],
                 basePath: './src'
             }
         },

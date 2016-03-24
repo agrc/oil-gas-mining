@@ -1,12 +1,6 @@
 define([
-    'dojo/parser', 
-
-    'app/App'
-], 
-
-function (
-    parser
-    ) {
+], function (
+) {
     window.AGRC = {
         // errorLogger: ijit.modules.ErrorLogger
         errorLogger: null,
@@ -27,7 +21,7 @@ function (
         urls: {
             ogmMapService: '/ArcGIS/rest/services/OilGasMining/MapServer',
             plssMapService: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahPLSS/MapServer',
-            geometryService: "http://mapserv.utah.gov/ArcGIS/rest/services/Geometry/GeometryServer"
+            geometryService: 'http://mapserv.utah.gov/ArcGIS/rest/services/Geometry/GeometryServer'
         },
 
         fieldNames: {
@@ -64,6 +58,5 @@ function (
         }
     };
 
-    // lights...camera...action!
-    parser.parse();
+    return window.AGRC;
 });
