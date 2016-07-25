@@ -27,3 +27,5 @@ src/spin.js/
 src/spinjs/
 src/util/
 src/xstyle/
+
+*.pyc
