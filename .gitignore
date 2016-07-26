@@ -29,3 +29,5 @@ src/util/
 src/xstyle/
 
 *.pyc
+
+scripts/secrets.py
