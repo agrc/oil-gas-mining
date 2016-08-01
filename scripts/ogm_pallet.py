@@ -88,11 +88,9 @@ class OGMPallet(Pallet):
 
         surfTempFC = path.join(arcpy.env.scratchGDB, 'surfTempFC')
         bHTempFC = path.join(arcpy.env.scratchGDB, 'bHTempFC')
-        bHPointFCTemp = path.join(arcpy.env.scratchGDB, 'bHPointFCTemp')
-        bHPathFCTemp = path.join(arcpy.env.scratchGDB, 'bHPathFCTemp')
 
         self.log.info('deleting temp data')
-        for fc in [surfTempFC, bHTempFC, bHPointFCTemp, bHPathFCTemp]:
+        for fc in [surfTempFC, bHTempFC]:
             if arcpy.Exists(fc):
                 arcpy.Delete_management(fc)
 
@@ -121,28 +119,19 @@ class OGMPallet(Pallet):
         self.log.info('Deleting for bottom of holefeatures from current FC')
         arcpy.DeleteFeatures_management(bHPointFC)
 
-        # NOTE: I had to copy these fc's to a temp file geodatabase in order for the
-        # insert cursors below to work. I kept getting an error message about the spatial
-        # index being too small. Maybe because I'm running this on a 10.1 client against
-        # a 10.0 sde database?
-        self.log.info('Copying bottom of holes to a temp feature class')
-        arcpy.Copy_management(bHPointFC, bHPointFCTemp)
-
         # delete features from current horizontal path FC
         self.log.info('Deleting features from current horizontal path FC')
         arcpy.DeleteFeatures_management(bHPathFC)
 
-        self.log.info('Copying paths to temp feature class')
-        arcpy.Copy_management(bHPathFC, bHPathFCTemp)
-
         # Create the insert cursor and point it at the file just created
         queryTxt = '{0} > 200000 and {1} > 4000000 and not ({0} = {2} and {1} = {3})'.format(ogmBHXField, ogmBHYField, ogmSurfXField, ogmSurfYField)
-        edit = arcpy.da.Editor(arcpy.env.scratchGDB)
+        edit = arcpy.da.Editor(sdeconnection)
         edit.startEditing(False, False)
+        edit.startOperation()
         with arcpy.da.SearchCursor(surfTempFC, ['API', 'SHAPE@'], queryTxt) as surfRows, \
                 arcpy.da.SearchCursor(bHTempFC, ['API', 'SHAPE@'], queryTxt) as bHRows, \
-                arcpy.da.InsertCursor(bHPointFCTemp, ['SHAPE@XY', 'API', 'UTMX_NAD83', 'UTMY_NAD83']) as bHPointInsertCursor, \
-                arcpy.da.InsertCursor(bHPathFCTemp, ['SHAPE@', 'API']) as bHPathInsertCursor:
+                arcpy.da.InsertCursor(bHPointFC, ['SHAPE@XY', 'API', 'UTMX_NAD83', 'UTMY_NAD83']) as bHPointInsertCursor, \
+                arcpy.da.InsertCursor(bHPathFC, ['SHAPE@', 'API']) as bHPathInsertCursor:
                 self.log.info('inserting new records...')
                 for surfRow, bHRow in itertools.izip(sorted(surfRows), sorted(bHRows)):
                     surfFeature = surfRow[1]
@@ -157,13 +146,8 @@ class OGMPallet(Pallet):
 
                     bHPathInsertCursor.insertRow((arcpy.Polyline(lineArray), surfRow[0]))
 
+        edit.stopOperation()
         edit.stopEditing(True)
-
-        self.log.info('appending features from temp point to sde')
-        arcpy.Append_management(bHPointFCTemp, bHPointFC)
-
-        self.log.info('appending features from temp path to sde')
-        arcpy.Append_management(bHPathFCTemp, bHPathFC)
 
         self.log.info('scrubbing dates')
         arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer, "[{}] = '1899-12-30 00:00:00'".format(LA_PA_DATE))
