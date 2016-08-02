@@ -50,6 +50,7 @@ class OGMPallet(Pallet):
         #: the code below is here so that the source data that the crates above reference
         #: is updated before they are processed.
         arcpy.overwriteoutput = True
+        arcpy.env.outputCoordinateSystem = None
 
         ogmconnection = path.join(self.garage, 'OGMUSER.odc')
         sdeconnection = path.join(self.garage, 'SGID10_ENERGY.sde')
@@ -106,6 +107,7 @@ class OGMPallet(Pallet):
 
         self.log.info("Appending new surface well location features")
         arcpy.Append_management(surfXYLayerName, surfPointFC, "NO_TEST")
+        arcpy.Delete_management(surfXYLayerName)
 
         #: WELL BOTTOM HOLE LOCATIONS
         self.log.info('Creating bhxy event layer for bottom of hole location data')
@@ -114,6 +116,7 @@ class OGMPallet(Pallet):
         # export to temp fc
         self.log.info('Exporting for bottom of hole xy event layer to temp feature class')
         arcpy.CopyFeatures_management(bHXYLayerName, bHTempFC)
+        arcpy.Delete_management(bHXYLayerName)
 
         # delete features from current bottom hole FC
         self.log.info('Deleting for bottom of holefeatures from current FC')
