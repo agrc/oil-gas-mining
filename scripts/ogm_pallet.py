@@ -167,90 +167,91 @@ class OGMPallet(Pallet):
         arcpy.CalculateField_management(wellsLayer, JURISDICTION, '"indian"', 'PYTHON')
 
         # update ftp packages
-        self.log.info('updating ftp package')
-        name = 'DOGMOilAndGasResources'
-        packageFolderPath = r'\\' + secrets.HNAS + r'\ftp\UtahSGID_Vector\UTM12_NAD83\ENERGY\PackagedData\_Statewide\\' + name
-        unpackagedFolderPath = r'\\' + secrets.HNAS + r'\ftp\UtahSGID_Vector\UTM12_NAD83\ENERGY\UnpackagedData\\'
-        featureClasses = ["SGID10.ENERGY.DNROilGasFields",
-                          "SGID10.ENERGY.DNROilGasUnits",
-                          "SGID10.ENERGY.DNROilGasWells",
-                          "SGID10.ENERGY.DNROilGasWells_HDBottom",
-                          "SGID10.ENERGY.DNROilGasWells_HDPath"]
-        if arcpy.Exists(path.join(packageFolderPath, name + ".gdb")):
-            arcpy.Delete_management(path.join(packageFolderPath, name + ".gdb"))
-        arcpy.CreateFileGDB_management(packageFolderPath, name + ".gdb", "9.3")
+        if (configuration == 'Production'):
+            self.log.info('updating ftp package')
+            name = 'DOGMOilAndGasResources'
+            packageFolderPath = r'\\' + secrets.HNAS + r'\ftp\UtahSGID_Vector\UTM12_NAD83\ENERGY\PackagedData\_Statewide\\' + name
+            unpackagedFolderPath = r'\\' + secrets.HNAS + r'\ftp\UtahSGID_Vector\UTM12_NAD83\ENERGY\UnpackagedData\\'
+            featureClasses = ["SGID10.ENERGY.DNROilGasFields",
+                              "SGID10.ENERGY.DNROilGasUnits",
+                              "SGID10.ENERGY.DNROilGasWells",
+                              "SGID10.ENERGY.DNROilGasWells_HDBottom",
+                              "SGID10.ENERGY.DNROilGasWells_HDPath"]
+            if arcpy.Exists(path.join(packageFolderPath, name + ".gdb")):
+                arcpy.Delete_management(path.join(packageFolderPath, name + ".gdb"))
+            arcpy.CreateFileGDB_management(packageFolderPath, name + ".gdb", "9.3")
 
-        def zipws(pth, zip, keep):
-            pth = path.normpath(pth)
+            def zipws(pth, zip, keep):
+                pth = path.normpath(pth)
 
-            for (dirpath, dirnames, filenames) in walk(pth):
-                for file in filenames:
-                    if not file.endswith('.lock'):
-                        try:
-                            if keep:
-                                if path.join(dirpath, file).find('.zip') == -1:
-                                    zip.write(path.join(dirpath, file), path.join(path.basename(pth), path.join(dirpath, file)[len(pth) + len(sep):]))
-                            else:
-                                if path.join(dirpath, file).find('gdb') == -1 and path.join(dirpath, file).find('.zip') == -1:
-                                    zip.write(path.join(dirpath, file), file.split(".")[0] + '\\' + file)
-                        except Exception as e:
-                            self.log.error("Error adding %s: %s" % (file, e))
-            return None
+                for (dirpath, dirnames, filenames) in walk(pth):
+                    for file in filenames:
+                        if not file.endswith('.lock'):
+                            try:
+                                if keep:
+                                    if path.join(dirpath, file).find('.zip') == -1:
+                                        zip.write(path.join(dirpath, file), path.join(path.basename(pth), path.join(dirpath, file)[len(pth) + len(sep):]))
+                                else:
+                                    if path.join(dirpath, file).find('gdb') == -1 and path.join(dirpath, file).find('.zip') == -1:
+                                        zip.write(path.join(dirpath, file), file.split(".")[0] + '\\' + file)
+                            except Exception as e:
+                                self.log.error("Error adding %s: %s" % (file, e))
+                return None
 
-        #: populate local file geodatabase
-        for fc in featureClasses:
-            arcpy.env.workspace = sdeconnection
-            if arcpy.Exists(path.join(sdeconnection, fc)):
-                #: add feature class to local file geodatabase to be packaged later
-                arcpy.Copy_management(path.join(sdeconnection, fc), path.join(packageFolderPath, name + ".gdb", fc))
+            #: populate local file geodatabase
+            for fc in featureClasses:
+                arcpy.env.workspace = sdeconnection
+                if arcpy.Exists(path.join(sdeconnection, fc)):
+                    #: add feature class to local file geodatabase to be packaged later
+                    arcpy.Copy_management(path.join(sdeconnection, fc), path.join(packageFolderPath, name + ".gdb", fc))
 
-                #: create another file gdb and copy to Unpackaged folder
-                fcUnpackagedFolderPath = path.join(unpackagedFolderPath, fc.split(".")[2], '_Statewide')
+                    #: create another file gdb and copy to Unpackaged folder
+                    fcUnpackagedFolderPath = path.join(unpackagedFolderPath, fc.split(".")[2], '_Statewide')
 
-                if not path.isdir(fcUnpackagedFolderPath):
-                    makedirs(fcUnpackagedFolderPath)
+                    if not path.isdir(fcUnpackagedFolderPath):
+                        makedirs(fcUnpackagedFolderPath)
 
-                arcpy.CreateFileGDB_management(fcUnpackagedFolderPath, fc.split(".")[2] + ".gdb")
-                arcpy.Copy_management(path.join(packageFolderPath, name + ".gdb", fc.split(".")[2]),
-                                      path.join(fcUnpackagedFolderPath, fc.split(".")[2] + ".gdb", fc.split(".")[2]))
+                    arcpy.CreateFileGDB_management(fcUnpackagedFolderPath, fc.split(".")[2] + ".gdb")
+                    arcpy.Copy_management(path.join(packageFolderPath, name + ".gdb", fc.split(".")[2]),
+                                          path.join(fcUnpackagedFolderPath, fc.split(".")[2] + ".gdb", fc.split(".")[2]))
 
-                zfGDBUnpackaged = zipfile.ZipFile(path.join(fcUnpackagedFolderPath, fc.split(".")[2] + '_gdb.zip'), 'w', zipfile.ZIP_DEFLATED)
-                zipws(path.join(fcUnpackagedFolderPath, fc.split(".")[2] + ".gdb"), zfGDBUnpackaged, True)
-                zfGDBUnpackaged.close()
+                    zfGDBUnpackaged = zipfile.ZipFile(path.join(fcUnpackagedFolderPath, fc.split(".")[2] + '_gdb.zip'), 'w', zipfile.ZIP_DEFLATED)
+                    zipws(path.join(fcUnpackagedFolderPath, fc.split(".")[2] + ".gdb"), zfGDBUnpackaged, True)
+                    zfGDBUnpackaged.close()
 
-                arcpy.Delete_management(path.join(fcUnpackagedFolderPath, fc.split(".")[2] + '.gdb'))
+                    arcpy.Delete_management(path.join(fcUnpackagedFolderPath, fc.split(".")[2] + '.gdb'))
 
-        arcpy.env.workspace = path.join(packageFolderPath, name + ".gdb")
+            arcpy.env.workspace = path.join(packageFolderPath, name + ".gdb")
 
-        #: create zip file for shapefile package
-        zfSHP = zipfile.ZipFile(path.join(packageFolderPath, name + '_shp.zip'), 'w', zipfile.ZIP_DEFLATED)
-        arcpy.env.overwriteOutput = True  #: Overwrite pre-existing files
+            #: create zip file for shapefile package
+            zfSHP = zipfile.ZipFile(path.join(packageFolderPath, name + '_shp.zip'), 'w', zipfile.ZIP_DEFLATED)
+            arcpy.env.overwriteOutput = True  #: Overwrite pre-existing files
 
-        #: output zipped shapefiles for each feature class
-        fileGDB_FCs = arcpy.ListFeatureClasses()
+            #: output zipped shapefiles for each feature class
+            fileGDB_FCs = arcpy.ListFeatureClasses()
 
-        for fc in fileGDB_FCs:
-            #: create shapefile for the feature class
-            arcpy.FeatureClassToShapefile_conversion(path.join(packageFolderPath, name + ".gdb", fc), packageFolderPath)
+            for fc in fileGDB_FCs:
+                #: create shapefile for the feature class
+                arcpy.FeatureClassToShapefile_conversion(path.join(packageFolderPath, name + ".gdb", fc), packageFolderPath)
 
-            #: add to package zipfile package
-            zipws(packageFolderPath, zfSHP, False)
+                #: add to package zipfile package
+                zipws(packageFolderPath, zfSHP, False)
 
-            # create unpackaged zip file and move data into that zip file
-            zfSHPUnpackaged = zipfile.ZipFile(path.join(unpackagedFolderPath, fc, '_Statewide', fc + '_shp.zip'), 'w', zipfile.ZIP_DEFLATED)
-            zipws(packageFolderPath, zfSHPUnpackaged, False)
-            zfSHPUnpackaged.close()
+                # create unpackaged zip file and move data into that zip file
+                zfSHPUnpackaged = zipfile.ZipFile(path.join(unpackagedFolderPath, fc, '_Statewide', fc + '_shp.zip'), 'w', zipfile.ZIP_DEFLATED)
+                zipws(packageFolderPath, zfSHPUnpackaged, False)
+                zfSHPUnpackaged.close()
 
-            # delete temporary shapefiles
-            arcpy.Delete_management(path.join(packageFolderPath, fc + ".shp"))
-        zfSHP.close()
+                # delete temporary shapefiles
+                arcpy.Delete_management(path.join(packageFolderPath, fc + ".shp"))
+            zfSHP.close()
 
-        zfFGDB = zipfile.ZipFile(path.join(packageFolderPath, name + '_gdb.zip'), 'w', zipfile.ZIP_DEFLATED)
-        target_dir = path.join(packageFolderPath, name + '.gdb')
-        rootlen = len(target_dir) + 1
-        for base, dirs, files in walk(target_dir):
-            for file in files:
-                fn = path.join(base, file)
-                zfFGDB.write(fn, name + ".gdb/" + fn[rootlen:])
-        zfFGDB.close()
-        rmtree(path.join(packageFolderPath, name + ".gdb"))
+            zfFGDB = zipfile.ZipFile(path.join(packageFolderPath, name + '_gdb.zip'), 'w', zipfile.ZIP_DEFLATED)
+            target_dir = path.join(packageFolderPath, name + '.gdb')
+            rootlen = len(target_dir) + 1
+            for base, dirs, files in walk(target_dir):
+                for file in files:
+                    fn = path.join(base, file)
+                    zfFGDB.write(fn, name + ".gdb/" + fn[rootlen:])
+            zfFGDB.close()
+            rmtree(path.join(packageFolderPath, name + ".gdb"))
