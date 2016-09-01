@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
+deploy/
 dist/
 node_modules/
 scripts/secrets.py
