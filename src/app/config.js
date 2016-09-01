@@ -12,7 +12,7 @@ define([
 
         // version: String
         //      The version number.
-        version: '2.0.1',
+        version: '2.1.0',
 
         // baseLayers: String[]
         //      The layers that show up in the layer-selector widget
