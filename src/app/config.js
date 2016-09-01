@@ -14,9 +14,13 @@ define([
         //      The version number.
         version: '2.0.1',
 
+        // baseLayers: String[]
+        //      The layers that show up in the layer-selector widget
+        baseLayers: ['Hybrid', 'Lite', 'Terrain', 'Topo'],
+
         urls: {
             ogmMapService: '/ArcGIS/rest/services/OilGasMining/MapServer',
-            plssMapService: 'http://mapserv.utah.gov/ArcGIS/rest/services/UtahPLSS/MapServer',
+            plssVectorTilesService: 'http://tiles.arcgis.com/tiles/99lidPhWCzftIe9K/arcgis/rest/services/UtahPLSS/VectorTileServer',
             geometryService: '/ArcGIS/rest/services/Geometry/GeometryServer'
         },
 
@@ -58,11 +62,11 @@ define([
     if (has('agrc-build') === 'prod') {
         // mapserv.utah.gov
         config.apiKey = 'AGRC-1B07B497348512';
-        config.quadWord = '';
+        config.quadWord = 'alfred-plaster-crystal-dexter';
     } else if (has('agrc-build') === 'stage') {
         // test.mapserv.utah.gov
         config.apiKey = 'AGRC-AC122FA9671436';
-        config.quadWord = '';
+        config.quadWord = 'opera-event-little-pinball';
     } else {
         // localhost
         xhr(require.baseUrl + 'secrets.json', {

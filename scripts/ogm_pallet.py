@@ -30,14 +30,13 @@ import secrets
 
 class OGMPallet(Pallet):
     def build(self, configuration):
-        self.destination_coordinate_system = arcpy.SpatialReference(26912)
         self.arcgis_services = [('OilGasMining', 'MapServer')]
 
         self.sgid = path.join(self.garage, 'SGID10.sde')
         self.staging = r'C:\Scheduled\staging'
-        self.energy = path.join(self.staging, 'energy_utm.gdb')
-        self.boundaries = path.join(self.staging, 'boundaries_utm.gdb')
-        self.water = path.join(self.staging, 'water_utm.gdb')
+        self.energy = path.join(self.staging, 'energy.gdb')
+        self.boundaries = path.join(self.staging, 'boundaries.gdb')
+        self.water = path.join(self.staging, 'water.gdb')
 
         self.add_crates(['DNROilGasWells', 'DNROilGasFields', 'DNROilGasUnits'],
                         {'source_workspace': self.sgid,

@@ -15,13 +15,14 @@
     "dgrid": "0.3.17/esri-3.14.0",
     "xstyle": "~0.2.1",
     "esri": "~3.16",
-    "agrc": "~4.1.0",
-    "spinjs": "~2.3.2"
+    "spinjs": "~2.3.2",
+    "agrc": "~5.0.1"
   },
   "dependencies": {
     "esri": "arcgis-js-api#~3.16",
-    "agrc": "agrc-widgets#~4.1.0",
+    "agrc": "agrc-widgets#~5.0.1",
     "ijit": "agrc-ijit#~3.1.1",
-    "sherlock": "agrc-sherlock#b8e00039bb1dd51c3bed0adc8a40b1a7fc2b71d4"
+    "sherlock": "agrc-sherlock#b8e00039bb1dd51c3bed0adc8a40b1a7fc2b71d4",
+    "layer-selector": "agrc-layer-selector#~0.4.0"
   }
 }

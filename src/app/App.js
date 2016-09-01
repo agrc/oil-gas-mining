@@ -1,8 +1,6 @@
 define([
-    'agrc/widgets/locate/FindAddress',
     'agrc/widgets/locate/TRSsearch',
     'agrc/widgets/map/BaseMap',
-    'agrc/widgets/map/BaseMapSelector',
 
     'app/config',
 
@@ -30,6 +28,7 @@ define([
     'esri/graphic',
     'esri/layers/ArcGISDynamicMapServiceLayer',
     'esri/layers/ArcGISTiledMapServiceLayer',
+    'esri/layers/VectorTileLayer',
     'esri/SpatialReference',
     'esri/symbols/SimpleFillSymbol',
     'esri/symbols/SimpleLineSymbol',
@@ -40,6 +39,8 @@ define([
     'esri/tasks/IdentifyTask',
     'esri/tasks/query',
     'esri/tasks/QueryTask',
+
+    'layer-selector/LayerSelector',
 
     'sherlock/providers/MapService',
     'sherlock/providers/WebAPI',
@@ -55,10 +56,8 @@ define([
     'dijit/ProgressBar',
     'dijit/Toolbar'
 ], function (
-    FindAddress,
     TRSsearch,
     BaseMap,
-    BaseMapSelector,
 
     config,
 
@@ -86,6 +85,7 @@ define([
     Graphic,
     ArcGISDynamicMapServiceLayer,
     ArcGISTiledMapServiceLayer,
+    VectorTileLayer,
     SpatialReference,
     SimpleFillSymbol,
     SimpleLineSymbol,
@@ -96,6 +96,8 @@ define([
     IdentifyTask,
     Query,
     QueryTask,
+
+    LayerSelector,
 
     MapService,
     WebAPI,
@@ -175,7 +177,8 @@ define([
             var provider = new WebAPI(
                 config.apiKey,
                 'SGID10.BOUNDARIES.Counties',
-                'NAME'
+                'NAME',
+                {wkid: 3857}
             );
             var county = new Sherlock({
                 provider: provider,
@@ -296,28 +299,35 @@ define([
 
             this.map = new BaseMap(this.mapDiv, {
                 useDefaultBaseMap: false,
+                extent: new Extent({
+                    xmax: -11762120.612131765,
+                    xmin: -13074391.513731329,
+                    ymax: 5225035.106177688,
+                    ymin: 4373832.359194187,
+                    spatialReference: {
+                        wkid: 3857
+                    }
+                }),
+                includeFullExtentButton: true,
                 router: true
             });
 
             var s;
 
-            s = new BaseMapSelector({
+            s = new LayerSelector({
                 map: this.map,
-                id: 'claro',
-                position: 'TR',
-                defaultThemeLabel: 'Hybrid'
+                quadWord: config.quadWord,
+                baseLayers: config.baseLayers
             });
+            s.startup();
 
             var that = this;
-            topic.subscribe('agrc.widgets.map.BaseMapSelector.onChangeTheme_' + s.id, function () {
-                // find tiled layer and set checkbox to match visibility
-                array.forEach(that.map.layerIds, function (id) {
-                    var lyr = that.map.getLayer(id);
-                    if (lyr.tileInfo && lyr.id !== 'PLSS') {
-                        dom.byId('tiled-checkbox').checked = lyr.visible;
-                        dom.byId('basemap-name').innerHTML = lyr.id;
-                    }
-                });
+            this.map.on('layer-add', function (event) {
+                var lyr = event.layer;
+                if (config.baseLayers.indexOf(lyr.id) > -1) {
+                    dom.byId('tiled-checkbox').checked = lyr.visible;
+                    dom.byId('basemap-name').innerHTML = lyr.id;
+                }
             });
 
             this.ogmLayers = new ArcGISDynamicMapServiceLayer(config.urls.ogmMapService, {
@@ -326,7 +336,7 @@ define([
             this.map.addLayer(this.ogmLayers);
             this.map.addLoaderToLayer(this.ogmLayers);
 
-            this.plssLayer = new ArcGISTiledMapServiceLayer(config.urls.plssMapService, {
+            this.plssLayer = new VectorTileLayer(config.urls.plssVectorTilesService, {
                 visible: false,
                 id: 'PLSS'
             });
@@ -513,7 +523,7 @@ define([
             }));
 
             var outSR = new SpatialReference({
-                wkid: 26912
+                wkid: 3857
             });
 
             var that = this;
@@ -537,21 +547,27 @@ define([
             // ycoord: Number
             console.log(this.declaredClass + '::addPointToMap', arguments);
 
-            var point = new Point(xcoord, ycoord, this.map.spatialReference);
-            var symbol = new SimpleMarkerSymbol().setColor(new Color([255, 0, 0, 0.5])).setStyle(SimpleMarkerSymbol.STYLE_DIAMOND);
-            var graphic = new Graphic(point, symbol);
+            var point = new Point(xcoord, ycoord, new SpatialReference({
+                wkid: 26912
+            }));
 
-            var xMin = xcoord - 500.05;
-            var yMin = ycoord - 500.05;
-            var xMax = xcoord + 500.05;
-            var yMax = ycoord + 500.05;
+            var outSR = new SpatialReference({
+                wkid: 3857
+            });
 
-            var newExtent = new Extent(xMin, yMin, xMax, yMax, new SpatialReference({wkid: 26912 }));
+            var that = this;
+            this.gsvc.project([point], outSR, function (features) {
+                // get point
+                var pt = features[0];
 
-            //  alert(map.extent.xmax);
-            this.map.setExtent(newExtent, true);
+                // build graphic
+                var symbol = new SimpleMarkerSymbol().setColor(
+                    new Color([255, 0, 0, 0.5])).setStyle(SimpleMarkerSymbol.STYLE_DIAMOND);
+                var graphic = new Graphic(pt, symbol);
+                that.map.graphics.add(graphic);
 
-            this.map.graphics.add(graphic);
+                that.map.centerAndZoom(graphic.geometry, 10);
+            });
         },
         executePSELQueryTask: function () {
             // summary:

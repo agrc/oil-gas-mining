@@ -74,6 +74,6 @@ var profile = {
         'xstyle/css': 'xstyle/build/amd-css'
     },
     userConfig: {
-        packages: ['app', 'dijit', 'dojox', 'agrc', 'ijit', 'esri', 'sherlock']
+        packages: ['app', 'dijit', 'dojox', 'agrc', 'ijit', 'esri', 'sherlock', 'layer-selector']
     }
 };

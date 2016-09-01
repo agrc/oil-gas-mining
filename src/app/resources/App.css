@@ -3,8 +3,7 @@
 @import '../../agrc/resources/map/BaseMap.css';
 @import '../../ijit/themes/standard/layout/SideBarToggler.css';
 @import '../../ijit/themes/standard/layout/PaneStack.css';
-@import '../../agrc/resources/map/BaseMapSelector.css';
-@import '../../agrc/resources/locate/FindAddress.css';
+@import '../../layer-selector/resources/LayerSelector.css';
 @import '../../agrc/resources/locate/TRSsearch.css';
 @import '../../bootstrap/dist/css/bootstrap.css';
 @import '../../sherlock/resources/Sherlock.css';
@@ -110,6 +109,12 @@ body, html, .app {
 }
 
 /* CENTER (MAP) */
+.app .layer-selector {
+    top: 18px;
+    margin-right: 10px;
+    border: 1px solid #57585A;
+    box-shadow: none;
+}
 .app .center-container {
     padding: 0;
 }
@@ -123,7 +128,7 @@ body, html, .app {
 }
 .app .esriSimpleSlider {
     top: 38px;
-    left: 7px;
+    left: 10px;
 }
 .app .map-div {
     width: 100%;

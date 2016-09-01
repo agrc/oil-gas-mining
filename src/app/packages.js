@@ -10,6 +10,10 @@ require({
         'moment',
         'sherlock',
         {
+            name: 'layer-selector',
+            location: './layer-selector',
+            main: 'LayerSelector'
+        }, {
             name: 'spin',
             location: './spinjs',
             main: 'spin'

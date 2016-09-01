@@ -1,6 +1,8 @@
 .DS_Store
+*.pyc
 dist/
 node_modules/
+scripts/secrets.py
 secrets.json
 src/agrc-jasmine-matchers/
 src/agrc/
@@ -18,6 +20,7 @@ src/jasmine-favicon-reporter/
 src/jasmine-jsreporter/
 src/jquery/
 src/ladda-bootstrap/
+src/layer-selector/
 src/moment/
 src/mustache/
 src/put-selector/
@@ -27,7 +30,3 @@ src/spin.js/
 src/spinjs/
 src/util/
 src/xstyle/
-
-*.pyc
-
-scripts/secrets.py
