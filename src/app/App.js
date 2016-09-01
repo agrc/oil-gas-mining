@@ -47,7 +47,9 @@ define([
     'sherlock/Sherlock',
 
     'dijit/Dialog',
+    'dijit/form/Button',
     'dijit/form/DropDownButton',
+    'dijit/form/TextBox',
     'dijit/layout/BorderContainer',
     'dijit/layout/ContentPane',
     'dijit/layout/TabContainer',
