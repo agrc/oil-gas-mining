@@ -20,7 +20,7 @@ define([
 
         urls: {
             ogmMapService: '/ArcGIS/rest/services/OilGasMining/MapServer',
-            plssVectorTilesService: 'http://tiles.arcgis.com/tiles/99lidPhWCzftIe9K/arcgis/rest/services/UtahPLSS/VectorTileServer',
+            plssVectorTilesService: '//tiles.arcgis.com/tiles/99lidPhWCzftIe9K/arcgis/rest/services/UtahPLSS/VectorTileServer',
             geometryService: '/ArcGIS/rest/services/Geometry/GeometryServer'
         },
 
