@@ -106,6 +106,7 @@ class OGMPallet(Pallet):
 
         self.log.info("Appending new surface well location features")
         arcpy.Append_management(surfXYLayerName, surfPointFC, "NO_TEST")
+        self.log.info('Total surface well points in SGID: {}'.format(arcpy.GetCount_management(surfPointFC)[0]))
         arcpy.Delete_management(surfXYLayerName)
 
         #: WELL BOTTOM HOLE LOCATIONS
