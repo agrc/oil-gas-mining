@@ -102,10 +102,14 @@ class OGMPallet(Pallet):
         arcpy.FeatureClassToFeatureClass_conversion(surfXYLayerName, arcpy.env.scratchGDB, 'surfTempFC')
 
         self.log.info('Deleting old surface well location features')
-        arcpy.DeleteFeatures_management(surfPointFC)
+        arcpy.TruncateTable_management(surfPointFC)
 
         self.log.info("Appending new surface well location features")
-        arcpy.Append_management(surfXYLayerName, surfPointFC, "NO_TEST")
+        field_names = [f.name for f in arcpy.ListFields(surfPointFC) if f.name not in ['OBJECTID', JURISDICTION]]
+        with arcpy.da.InsertCursor(surfPointFC, field_names) as icur, arcpy.da.SearchCursor(surfXYLayerName, field_names) as scur:
+            for row in scur:
+                icur.insertRow(row)
+
         self.log.info('scrubbing dates')
         arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer, "[{}] = '1899-12-30 00:00:00'".format(LA_PA_DATE))
         arcpy.CalculateField_management(wellsLayer, LA_PA_DATE, 'None', 'PYTHON')
@@ -128,11 +132,11 @@ class OGMPallet(Pallet):
 
         # delete features from current bottom hole FC
         self.log.info('Deleting for bottom of holefeatures from current FC')
-        arcpy.DeleteFeatures_management(bHPointFC)
+        arcpy.TruncateTable_management(bHPointFC)
 
         # delete features from current horizontal path FC
         self.log.info('Deleting features from current horizontal path FC')
-        arcpy.DeleteFeatures_management(bHPathFC)
+        arcpy.TruncateTable_management(bHPathFC)
 
         # Create the insert cursor and point it at the file just created
         queryTxt = '{0} > 200000 and {1} > 4000000 and not ({0} = {2} and {1} = {3})'.format(ogmBHXField, ogmBHYField, ogmSurfXField, ogmSurfYField)
