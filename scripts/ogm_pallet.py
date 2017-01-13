@@ -32,6 +32,7 @@ class OGMPallet(Pallet):
     def build(self, configuration):
         self.arcgis_services = [('OilGasMining', 'MapServer')]
 
+        self.sgid_energy = path.join(self.garage, 'SGID10_ENERGY.sde')
         self.sgid = path.join(self.garage, 'SGID10.sde')
         self.staging = r'C:\Scheduled\staging'
         self.energy = path.join(self.staging, 'energy.gdb')
@@ -39,7 +40,7 @@ class OGMPallet(Pallet):
         self.water = path.join(self.staging, 'water.gdb')
 
         self.add_crates(['DNROilGasWells', 'DNROilGasFields', 'DNROilGasUnits'],
-                        {'source_workspace': self.sgid,
+                        {'source_workspace': self.sgid_energy,
                          'destination_workspace': self.energy})
         self.add_crate(('Counties', self.sgid, self.boundaries))
         self.add_crate(('StreamsNHDHighRes', self.sgid, self.water))
@@ -52,7 +53,6 @@ class OGMPallet(Pallet):
         arcpy.env.outputCoordinateSystem = None
 
         ogmconnection = path.join(self.garage, 'OGMUSER.odc')
-        sdeconnection = path.join(self.garage, 'SGID10_ENERGY.sde')
 
         if configuration == 'Dev':
             indian_country = r'C:\MapData\deqreferencedata.gdb\Total_IC_and_ReservationTribalLand'
@@ -77,9 +77,9 @@ class OGMPallet(Pallet):
 
         # establish connections
         ogmTable = path.join(ogmconnection, ogmTableName)
-        surfPointFC = path.join(sdeconnection, outputSurfFCName)
-        bHPointFC = path.join(sdeconnection, outputBHFCName)
-        bHPathFC = path.join(sdeconnection, outputBHPathFCName)
+        surfPointFC = path.join(self.sgid_energy, outputSurfFCName)
+        bHPointFC = path.join(self.sgid_energy, outputBHFCName)
+        bHPathFC = path.join(self.sgid_energy, outputBHPathFCName)
 
         utmNAD83 = arcpy.SpatialReference(26912)
 
@@ -128,7 +128,7 @@ class OGMPallet(Pallet):
 
         # Create the insert cursor and point it at the file just created
         queryTxt = '{0} > 200000 and {1} > 4000000 and not ({0} = {2} and {1} = {3})'.format(ogmBHXField, ogmBHYField, ogmSurfXField, ogmSurfYField)
-        edit = arcpy.da.Editor(sdeconnection)
+        edit = arcpy.da.Editor(self.sgid_energy)
         edit.startEditing(False, False)
         edit.startOperation()
         with arcpy.da.SearchCursor(surfTempFC, ['API', 'SHAPE@'], queryTxt) as surfRows, \
@@ -200,10 +200,10 @@ class OGMPallet(Pallet):
 
             #: populate local file geodatabase
             for fc in featureClasses:
-                arcpy.env.workspace = sdeconnection
-                if arcpy.Exists(path.join(sdeconnection, fc)):
+                arcpy.env.workspace = self.sgid_energy
+                if arcpy.Exists(path.join(self.sgid_energy, fc)):
                     #: add feature class to local file geodatabase to be packaged later
-                    arcpy.Copy_management(path.join(sdeconnection, fc), path.join(packageFolderPath, name + ".gdb", fc))
+                    arcpy.Copy_management(path.join(self.sgid_energy, fc), path.join(packageFolderPath, name + ".gdb", fc))
 
                     #: create another file gdb and copy to Unpackaged folder
                     fcUnpackagedFolderPath = path.join(unpackagedFolderPath, fc.split(".")[2], '_Statewide')
