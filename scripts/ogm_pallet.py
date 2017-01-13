@@ -106,6 +106,14 @@ class OGMPallet(Pallet):
 
         self.log.info("Appending new surface well location features")
         arcpy.Append_management(surfXYLayerName, surfPointFC, "NO_TEST")
+        self.log.info('scrubbing dates')
+        arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer, "[{}] = '1899-12-30 00:00:00'".format(LA_PA_DATE))
+        arcpy.CalculateField_management(wellsLayer, LA_PA_DATE, 'None', 'PYTHON')
+        arcpy.Delete_management(wellsLayer)
+        arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer, "[{}] = '1899-12-30 00:00:00'".format(ORIG_COMPL_DATE))
+        arcpy.CalculateField_management(wellsLayer, ORIG_COMPL_DATE, 'None', 'PYTHON')
+        arcpy.Delete_management(wellsLayer)
+
         self.log.info('Total surface well points in SGID: {}'.format(arcpy.GetCount_management(surfPointFC)[0]))
         arcpy.Delete_management(surfXYLayerName)
 
@@ -151,14 +159,6 @@ class OGMPallet(Pallet):
 
         edit.stopOperation()
         edit.stopEditing(True)
-
-        self.log.info('scrubbing dates')
-        arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer, "[{}] = '1899-12-30 00:00:00'".format(LA_PA_DATE))
-        arcpy.CalculateField_management(wellsLayer, LA_PA_DATE, 'None', 'PYTHON')
-        arcpy.Delete_management(wellsLayer)
-        arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer, "[{}] = '1899-12-30 00:00:00'".format(ORIG_COMPL_DATE))
-        arcpy.CalculateField_management(wellsLayer, ORIG_COMPL_DATE, 'None', 'PYTHON')
-        arcpy.Delete_management(wellsLayer)
 
         self.log.info('updating JURISDICTION field')
         arcpy.MakeFeatureLayer_management(surfPointFC, wellsLayer)
