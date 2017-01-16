@@ -1,6 +1,6 @@
 {
     "name": "oil-gas-mining",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "main": "main",
     "dojoBuild": "app.profile.js"
 }
