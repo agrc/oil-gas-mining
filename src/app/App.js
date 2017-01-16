@@ -275,7 +275,7 @@ define([
             this.identifyParams = new IdentifyParameters();
             this.identifyParams.tolerance = 3;
             this.identifyParams.returnGeometry = true;
-            this.identifyParams.layerIds = [0, 6, 8]; //wells, fields, units
+            this.identifyParams.layerIds = [0, 7, 9]; //wells, fields, units
             this.identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_TOP;
             this.identifyParams.width = this.map.width;
             this.identifyParams.height = this.map.height;
