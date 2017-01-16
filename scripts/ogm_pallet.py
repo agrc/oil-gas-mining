@@ -39,7 +39,7 @@ class OGMPallet(Pallet):
         self.boundaries = path.join(self.staging, 'boundaries.gdb')
         self.water = path.join(self.staging, 'water.gdb')
 
-        self.add_crates(['DNROilGasWells', 'DNROilGasFields', 'DNROilGasUnits'],
+        self.add_crates(['DNROilGasWells', 'DNROilGasFields', 'DNROilGasUnits', 'DNROilGasWells_HDPath'],
                         {'source_workspace': self.sgid_energy,
                          'destination_workspace': self.energy})
         self.add_crate(('Counties', self.sgid, self.boundaries))
