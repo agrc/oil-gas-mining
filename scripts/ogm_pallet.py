@@ -29,9 +29,6 @@ import secrets
 
 
 class OGMPallet(Pallet):
-    def __init__(self):
-        super(OGMPallet, self).__init__()
-
     def build(self, configuration):
         self.arcgis_services = [('OilGasMining', 'MapServer')]
 
